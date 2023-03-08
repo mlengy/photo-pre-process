@@ -7,9 +7,10 @@ setup(
     author="Michael Leng",
     author_email="michael@len.gy",
     install_requires=["typer[all]"],
+    license="MIT",
     entry_points={
         "console_scripts": [
-            "pp=pp:main"
+            "pthree=pthree:main"
         ]
     }
 )
