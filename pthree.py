@@ -7,7 +7,7 @@ from commands.process import Process
 from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
 
-app = typer.Typer()
+app = typer.Typer(help="Utility scripts to assist in renaming and generating metadata files for digital photos.")
 
 
 @app.command(help="Renames photos, generates text EXIF, and generates EXIF files.")
