@@ -96,6 +96,7 @@ class Process:
         texif.do_texif_simple(exiftool, num_images, meta_simple_destination)
 
         self.step_count += 1
+        texif.step_count = self.step_count
         texif.do_texif_full(exiftool, num_images, meta_full_destination)
 
         self.step_count += 1
