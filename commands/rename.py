@@ -2,6 +2,7 @@ import shutil
 import json
 import typer
 
+from util.config import Config
 from util.helpers import Util, Printer
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -78,7 +79,7 @@ class Rename:
                 f"-{Tags.FileName}",
                 f"-{Tags.DateTimeOriginal}",
                 "-d",
-                "%Y%m%d-%H%M%S%z",
+                Config.rename_date_format,
                 self.directory
             )
         )
