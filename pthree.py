@@ -25,12 +25,16 @@ def process(
             False,
             help="Rename original files and make a copy"
         ),
+        preset: Optional[str] = typer.Option(
+            "fujifilmxt5",
+            help="Which TEXIF preset to use: fujifilmxt5"
+        ),
         extension: Optional[str] = typer.Option(
             "JPG",
             help="Extension of files to process"
         )
 ):
-    Process(initials, directory, output_directory, keep_original, extension).process()
+    Process(initials, directory, output_directory, keep_original, preset, extension).process()
 
 
 @app.command(help="Rename photos to a consistent format")

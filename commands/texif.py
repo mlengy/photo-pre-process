@@ -52,9 +52,8 @@ class Texif:
             if not type_caught:
                 print(f"Type [{self.type}] is not a valid type!")
 
-
-
-    def do_texif_full(self, exiftool: ExifTool):
+    def do_texif_full(self, exiftool: ExifTool, output_directory: str = None):
+        output_directory_override = self.output_directory if not output_directory else output_directory
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         for file_name in file_names:
@@ -66,7 +65,7 @@ class Texif:
             )
 
             file_name_extensionless = os.path.splitext(file_name)[0]
-            full_path_to = f"{self.output_directory}/{file_name_extensionless}.html"
+            full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
 
             print(f"    Writing full HTML dump to [{full_path_to}]...")
 
@@ -76,7 +75,8 @@ class Texif:
             print("    Done!")
         print("Done!")
 
-    def do_texif_simple(self, exiftool: ExifTool):
+    def do_texif_simple(self, exiftool: ExifTool, output_directory: str = None):
+        output_directory_override = self.output_directory if not output_directory else output_directory
         preset_directory = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'presets'))
         presets = {os.path.splitext(preset_path)[0] for preset_path in os.listdir(preset_directory)}
 
@@ -108,7 +108,7 @@ class Texif:
                     print(f"    Warning: could not find tag [{required_tag}]!")
 
             file_name_extensionless = os.path.splitext(file_name)[0]
-            full_path_to = f"{self.output_directory}/{file_name_extensionless}.txt"
+            full_path_to = f"{output_directory_override}/{file_name_extensionless}.txt"
 
             print(f"    Writing TEXIF to [{full_path_to}]...")
 
