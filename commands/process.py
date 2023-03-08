@@ -1,4 +1,4 @@
-from util.helpers import Util
+from util.helpers import Util, Printer
 from commands.rename import Rename
 from commands.texif import Texif
 from commands.exif import Exif
@@ -17,6 +17,8 @@ class Process:
         self.extension = extension
 
     def process(self):
+        Process.start_message()
+
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
@@ -33,10 +35,10 @@ class Process:
             self.__texif(exiftool, image_destination, meta_destination)
             self.__exif(exiftool, image_destination, meta_destination)
 
-            print("\nDone! 🎉")
+        Printer.done_all()
 
     def __rename(self, exiftool: ExifTool, image_destination: str):
-        print("\nRenaming...\n")
+        Rename.start_message()
 
         rename = Rename(
             initials=self.initials,
@@ -51,8 +53,10 @@ class Process:
         else:
             rename.do_rename(exiftool, Rename.do_rename_move)
 
+        Printer.done(suffix=" rename")
+
     def __texif(self, exiftool: ExifTool, image_destination: str, meta_destination: str):
-        print("\nGenerating TEXIF files...\n")
+        Texif.start_message()
 
         meta_simple_destination = f"{meta_destination}/simple"
         meta_full_destination = f"{meta_destination}/full"
@@ -72,8 +76,10 @@ class Process:
         texif.do_texif_simple(exiftool, meta_simple_destination)
         texif.do_texif_full(exiftool, meta_full_destination)
 
+        Printer.done(suffix=" TEXIF")
+
     def __exif(self, exiftool: ExifTool, image_destination: str, meta_destination: str):
-        print("\nGenerating MIE files...\n")
+        Exif.start_message()
 
         meta_mie_destination = f"{meta_destination}/mie"
 
@@ -86,3 +92,11 @@ class Process:
         )
 
         exif.do_exif(exiftool)
+
+        Printer.done(suffix=" EXIF")
+
+    @staticmethod
+    def start_message():
+        Printer.divider()
+        print("🔄 Starting process! 🔄")
+        Printer.divider()

@@ -1,7 +1,7 @@
 import shutil
 import json
 
-from util.helpers import Util
+from util.helpers import Util, Printer
 from util.constants import Tags
 from util.exiftool import ExifTool
 
@@ -15,6 +15,8 @@ class Rename:
         self.extension = extension
 
     def rename(self):
+        Rename.start_message()
+
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
@@ -26,6 +28,8 @@ class Rename:
                 self.do_rename(exiftool, Rename.do_rename_copy)
             else:
                 self.do_rename(exiftool, Rename.do_rename_move)
+
+        Printer.done_all()
 
     def do_rename(self, exiftool: ExifTool, file_modification_closure):
         formatted_date_times = self.__get_formatted_date_time(exiftool)
@@ -51,16 +55,16 @@ class Rename:
             full_path_to = f"{self.output_directory}/{full_filename}"
             file_modification_closure(full_path_from, full_path_to)
 
-        print("Done!")
+        Printer.done()
 
     @staticmethod
     def do_rename_copy(from_path: str, to_path: str):
-        print(f"Copying [{from_path}] to [{to_path}]...")
+        Printer.waiting(f"Copying [{from_path}] to [{to_path}]...")
         shutil.copy2(from_path, to_path)
 
     @staticmethod
     def do_rename_move(from_path: str, to_path: str):
-        print(f"Moving [{from_path}] to [{to_path}]...")
+        Printer.waiting(f"Moving [{from_path}] to [{to_path}]...")
         shutil.move(from_path, to_path)
 
     def __get_formatted_date_time(self, exiftool: ExifTool):
@@ -75,3 +79,9 @@ class Rename:
                 self.directory
             )
         )
+
+    @staticmethod
+    def start_message():
+        Printer.divider()
+        print("🖋️ Starting rename! 🖋️")
+        Printer.divider()

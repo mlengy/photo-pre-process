@@ -4,7 +4,7 @@ import json
 from typing import TextIO
 import typer
 
-from util.helpers import Util
+from util.helpers import Util, Printer
 from util.constants import Tags
 from util.exiftool import ExifTool
 
@@ -32,6 +32,8 @@ class Texif:
         self.compiled_presets: list[list[tuple[str, list[str]]]] = []
 
     def texif(self):
+        Texif.start_message()
+
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
@@ -50,14 +52,19 @@ class Texif:
                 self.do_texif_full(exiftool)
 
             if not type_caught:
-                print(f"Type [{self.type}] is not a valid type!")
+                Printer.error(f"Type [{self.type}] is not a valid type!")
+                raise typer.Abort()
+
+        Printer.done_all()
 
     def do_texif_full(self, exiftool: ExifTool, output_directory: str = None):
+        print("\n🌐 Starting TEXIF full (HTML)! 🌐\n")
+
         output_directory_override = self.output_directory if not output_directory else output_directory
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         for file_name in file_names:
-            print(f"Generating full HTML dump for [{file_name}]...")
+            Printer.waiting(f"Generating full HTML dump for [{file_name}]...")
             full_html_dump = exiftool.execute_with_extension(
                 self.extension,
                 f"-{Tags.HTMLDump}",
@@ -67,21 +74,23 @@ class Texif:
             file_name_extensionless = os.path.splitext(file_name)[0]
             full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
 
-            print(f"    Writing full HTML dump to [{full_path_to}]...")
+            Printer.waiting(f"Writing full HTML dump to [{full_path_to}]...", prefix="    ")
 
             with open(full_path_to, "a") as texif_file:
                 texif_file.write(full_html_dump)
 
-            print("    Done!")
-        print("Done!")
+            Printer.done(prefix="    ")
+        Printer.done()
 
     def do_texif_simple(self, exiftool: ExifTool, output_directory: str = None):
+        print("\n📋 Starting TEXIF simple (TXT)! 📋\n")
+
         output_directory_override = self.output_directory if not output_directory else output_directory
         preset_directory = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'presets'))
         presets = {os.path.splitext(preset_path)[0] for preset_path in os.listdir(preset_directory)}
 
         if self.preset not in presets:
-            print(f"Cannot find preset [{self.preset}]!")
+            Printer.error(f"Cannot find preset [{self.preset}]!")
             raise typer.Abort()
 
         required_tags = self.__compile_preset(preset_directory)
@@ -91,9 +100,9 @@ class Texif:
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         for file_name in file_names:
-            print(f"Generating simple TEXIF for [{file_name}]...")
+            Printer.waiting(f"Generating simple TEXIF for [{file_name}]...")
 
-            print("    Building tag JSON...")
+            Printer.waiting(f"Building tag JSON...", prefix="    ")
             file_tags = json.loads(
                 exiftool.execute_with_extension(
                     self.extension,
@@ -105,12 +114,12 @@ class Texif:
 
             for required_tag in required_tags:
                 if required_tag not in file_tags:
-                    print(f"    Warning: could not find tag [{required_tag}]!")
+                    Printer.warning(f"Warning: could not find tag [{required_tag}]!", prefix="    ")
 
             file_name_extensionless = os.path.splitext(file_name)[0]
             full_path_to = f"{output_directory_override}/{file_name_extensionless}.txt"
 
-            print(f"    Writing TEXIF to [{full_path_to}]...")
+            Printer.waiting(f"Writing TEXIF to [{full_path_to}]...", prefix="    ")
 
             with open(full_path_to, "a") as texif_file:
                 Util.write_with_newline(texif_file, file_tags[Tags.FileName])
@@ -121,8 +130,8 @@ class Texif:
                     if self.level >= level:
                         self.__process_level(level, file_tags, texif_file)
 
-            print("    Done!")
-        print("Done!")
+            Printer.done(prefix="    ")
+        Printer.done()
 
     def __process_level(self, level: int, file_tags: dict, texif_file: TextIO):
         compiled_preset = self.compiled_presets[level - 1]
@@ -139,7 +148,7 @@ class Texif:
 
     def __compile_preset(self, preset_directory: str):
         try:
-            print(f"Compiling preset [{self.preset}]...")
+            Printer.waiting(f"Compiling preset [{self.preset}]...")
             with open(f"{preset_directory}/{self.preset}.json") as preset_file:
                 preset_json = json.load(preset_file)
                 required_tags = set()
@@ -147,11 +156,11 @@ class Texif:
                 for level in range(1, Texif.json_level_highest + 1):
                     required_tags |= self.__compile_preset_level(level, preset_json[str(level)])
 
-                print("Requiring the following tags:")
+                Printer.waiting("Requiring the following tags:")
                 print(required_tags)
                 return required_tags
         except Exception:
-            print(f"Error while compiling preset [{self.preset}]!")
+            Printer.error(f"Error while compiling preset [{self.preset}]!")
             traceback.print_exc()
             raise typer.Abort()
 
@@ -188,3 +197,9 @@ class Texif:
         )
 
         return set(required_tags)
+
+    @staticmethod
+    def start_message():
+        Printer.divider()
+        print("📃 Starting TEXIF! 📃")
+        Printer.divider()

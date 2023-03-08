@@ -11,18 +11,18 @@ from util.exiftool import ExifTool
 class Util:
     @staticmethod
     def verify_directory(directory: str):
-        print(f"Using [{directory}] as working directory...")
+        print(f"📁 Using [{directory}] as working directory...")
         if not os.path.isdir(directory):
-            print(f"Directory [{directory}] does not exist!")
+            Printer.error(f"Directory [{directory}] does not exist!")
             raise typer.Abort()
 
     @staticmethod
     def create_directory_or_abort(directory: str):
         if not os.path.isdir(directory):
-            print(f"Creating directory [{directory}] since it does not exist.")
+            Printer.waiting(f"Creating directory [{directory}] since it does not exist.")
             os.makedirs(directory)
         else:
-            print(f"Directory [{directory}] already exists!")
+            Printer.warning(f"Directory [{directory}] already exists!")
             user_continue = typer.prompt(f"This will overwrite [{directory}]! Continue? (y/n)")
             if user_continue.lower() == "y":
                 shutil.rmtree(directory)
@@ -33,7 +33,7 @@ class Util:
     @staticmethod
     def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "."):
         if not Util._get_valid_file_names(exiftool, extension, directory):
-            print(f"There are no files with extension [{extension}] in directory [{directory}]!")
+            Printer.error(f"There are no files with extension [{extension}] in directory [{directory}]!")
             raise typer.Abort()
 
     @staticmethod
@@ -53,3 +53,31 @@ class Util:
     @staticmethod
     def write_with_newline(file: TextIO, string: str = ""):
         file.write(f"{string}\n")
+
+
+class Printer:
+    @staticmethod
+    def divider():
+        print(f"\n================================================================\n")
+
+    @staticmethod
+    def done_all(prefix: str = ""):
+        Printer.divider()
+        print(f"{prefix}🎉🎊🥳 Done! 🥳🎊🎉")
+        Printer.divider()
+
+    @staticmethod
+    def done(prefix: str = "", suffix: str = ""):
+        print(f"{prefix}👍 Done{suffix}!")
+
+    @staticmethod
+    def waiting(string: str, prefix: str = ""):
+        print(f"{prefix}⏳ {string}")
+
+    @staticmethod
+    def warning(string: str, prefix: str = ""):
+        print(f"{prefix}❗ {string}")
+
+    @staticmethod
+    def error(string: str, prefix: str = ""):
+        print(f"{prefix}‼️  {string}")
