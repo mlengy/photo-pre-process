@@ -31,7 +31,7 @@ class Util:
     @staticmethod
     def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "."):
         if not Util._get_valid_file_names(exiftool, extension, directory):
-            print(f"There are no files with extension [{extension}] in the current directory!")
+            print(f"There are no files with extension [{extension}] in directory [{directory}]!")
             raise typer.Exit(code=1)
 
     @staticmethod
