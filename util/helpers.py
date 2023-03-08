@@ -11,6 +11,7 @@ from util.exiftool import ExifTool
 class Util:
     @staticmethod
     def verify_directory(directory: str):
+        print(f"Using [{directory}] as working directory...")
         if not os.path.isdir(directory):
             print(f"Directory [{directory}] does not exist!")
             raise typer.Abort()
