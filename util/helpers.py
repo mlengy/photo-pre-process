@@ -1,6 +1,7 @@
 import os
 import shutil
 import json
+from typing import TextIO
 import typer
 
 from util.constants import Tags
@@ -12,7 +13,7 @@ class Util:
     def verify_directory(directory: str):
         if not os.path.isdir(directory):
             print(f"Directory [{directory}] does not exist!")
-            raise typer.Exit(code=1)
+            raise typer.Abort()
 
     @staticmethod
     def create_directory_or_abort(directory: str):
@@ -26,13 +27,13 @@ class Util:
                 shutil.rmtree(directory)
                 Util.create_directory_or_abort(directory)
             else:
-                raise typer.Exit(code=1)
+                raise typer.Abort()
 
     @staticmethod
     def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "."):
         if not Util._get_valid_file_names(exiftool, extension, directory):
             print(f"There are no files with extension [{extension}] in directory [{directory}]!")
-            raise typer.Exit(code=1)
+            raise typer.Abort()
 
     @staticmethod
     def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "."):
@@ -47,3 +48,7 @@ class Util:
             f"-{Tags.FileName}",
             directory
         )
+
+    @staticmethod
+    def write_with_newline(file: TextIO, string: str = ""):
+        file.write(f"{string}\n")

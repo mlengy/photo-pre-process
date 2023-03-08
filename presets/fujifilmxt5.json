@@ -1,0 +1,481 @@
+{
+  "0": [
+    "DateTimeOriginal",
+    "OffsetTimeOriginal",
+    "Artist",
+    "Copyright",
+    "Make",
+    "Model",
+    "SerialNumber",
+    "LensMake",
+    "LensModel",
+    "LensInfo",
+    "LensSerialNumber",
+    "FocalLength",
+    "FocalLengthIn35mmFormat",
+    "ApertureValue",
+    "ShutterSpeed",
+    "ShutterSpeedValue",
+    "ISO",
+    "XResolution",
+    "YResolution",
+    "ResolutionUnit",
+    "ImageWidth",
+    "ImageHeight",
+    "PixelFormat",
+    "PictureMode",
+    "FilmMode",
+    "GrainEffectRoughness",
+    "GrainEffectSize",
+    "ColorChromeEffect",
+    "ColorChromeFXBlue",
+    "WhiteBalance",
+    "WhiteBalanceFineTune",
+    "DynamicRangeSetting",
+    "HighlightTone",
+    "ShadowTone",
+    "Saturation",
+    "Sharpness",
+    "NoiseReduction",
+    "Clarity",
+    "ShutterType",
+    "AFMode",
+    "ExposureCount"
+  ],
+  "3": [
+    [
+      {
+        "tag": "DateTimeOriginal",
+        "name": "DateTimeOriginal"
+      }
+    ],
+    [
+      {
+        "tag": "OffsetTimeOriginal",
+        "name": "OffsetTimeOriginal"
+      }
+    ],
+    [
+      {
+        "tag": "Artist",
+        "name": "Artist"
+      }
+    ],
+    [
+      {
+        "tag": "Copyright",
+        "name": "Copyright"
+      }
+    ],
+    [
+      {
+        "tag": "Make",
+        "name": "Make"
+      }
+    ],
+    [
+      {
+        "tag": "Model",
+        "name": "Model"
+      }
+    ],
+    [
+      {
+        "tag": "SerialNumber",
+        "name": "SerialNumber"
+      }
+    ],
+    [
+      {
+        "tag": "LensMake",
+        "name": "LensMake"
+      }
+    ],
+    [
+      {
+        "tag": "LensModel",
+        "name": "LensModel"
+      }
+    ],
+    [
+      {
+        "tag": "LensInfo",
+        "name": "LensInfo"
+      }
+    ],
+    [
+      {
+        "tag": "LensSerialNumber",
+        "name": "LensSerialNumber"
+      }
+    ],
+    [
+      {
+        "tag": "FocalLength",
+        "name": "FocalLength"
+      }
+    ],
+    [
+      {
+        "tag": "FocalLengthIn35mmFormat",
+        "name": "FocalLengthIn35mmFormat"
+      }
+    ],
+    [
+      {
+        "tag": "ApertureValue",
+        "name": "ApertureValue"
+      }
+    ],
+    [
+      {
+        "tag": "ShutterSpeed",
+        "name": "ShutterSpeed"
+      }
+    ],
+    [
+      {
+        "tag": "ShutterSpeedValue",
+        "name": "ShutterSpeedValue"
+      }
+    ],
+    [
+      {
+        "tag": "ISO",
+        "name": "ISO"
+      }
+    ],
+    [
+      {
+        "tag": "XResolution",
+        "name": "XResolution"
+      }
+    ],
+    [
+      {
+        "tag": "YResolution",
+        "name": "YResolution"
+      }
+    ],
+    [
+      {
+        "tag": "ResolutionUnit",
+        "name": "ResolutionUnit"
+      }
+    ],
+    [
+      {
+        "tag": "ImageWidth",
+        "name": "ImageWidth"
+      }
+    ],
+    [
+      {
+        "tag": "ImageHeight",
+        "name": "ImageHeight"
+      }
+    ],
+    [
+      {
+        "tag": "PixelFormat",
+        "name": "PixelFormat"
+      }
+    ],
+    [
+      {
+        "tag": "PictureMode",
+        "name": "PictureMode"
+      }
+    ],
+    [
+      {
+        "tag": "FilmMode",
+        "name": "FilmMode"
+      }
+    ],
+    [
+      {
+        "tag": "GrainEffectRoughness",
+        "name": "GrainEffectRoughness"
+      }
+    ],
+    [
+      {
+        "tag": "GrainEffectSize",
+        "name": "GrainEffectSize"
+      }
+    ],
+    [
+      {
+        "tag": "ColorChromeEffect",
+        "name": "ColorChromeEffect"
+      }
+    ],
+    [
+      {
+        "tag": "ColorChromeFXBlue",
+        "name": "ColorChromeFXBlue"
+      }
+    ],
+    [
+      {
+        "tag": "WhiteBalance",
+        "name": "WhiteBalance"
+      }
+    ],
+    [
+      {
+        "tag": "WhiteBalanceFineTune",
+        "name": "WhiteBalanceFineTune"
+      }
+    ],
+    [
+      {
+        "tag": "DynamicRangeSetting",
+        "name": "DynamicRangeSetting"
+      }
+    ],
+    [
+      {
+        "tag": "HighlightTone",
+        "name": "HighlightTone"
+      }
+    ],
+    [
+      {
+        "tag": "ShadowTone",
+        "name": "ShadowTone"
+      }
+    ],
+    [
+      {
+        "tag": "Saturation",
+        "name": "Saturation"
+      }
+    ],
+    [
+      {
+        "tag": "Sharpness",
+        "name": "Sharpness"
+      }
+    ],
+    [
+      {
+        "tag": "NoiseReduction",
+        "name": "NoiseReduction"
+      }
+    ],
+    [
+      {
+        "tag": "Clarity",
+        "name": "Clarity"
+      }
+    ],
+    [
+      {
+        "tag": "ShutterType",
+        "name": "ShutterType"
+      }
+    ],
+    [
+      {
+        "tag": "AFMode",
+        "name": "AFMode"
+      }
+    ],
+    [
+      {
+        "tag": "ExposureCount",
+        "name": "ExposureCount"
+      }
+    ]
+  ],
+  "2": [
+    [
+      {
+        "tag": "DateTimeOriginal",
+        "delimiter": ""
+      },
+      {
+        "tag": "OffsetTimeOriginal"
+      }
+    ],
+    [
+      {
+        "tag": "Artist",
+        "delimiter": ", "
+      },
+      {
+        "tag": "Copyright"
+      }
+    ],
+    [
+      {
+        "tag": "ImageWidth",
+        "delimiter": " x "
+      },
+      {
+        "tag": "ImageHeight"
+      }
+    ],
+    [
+      {
+        "tag": "Make",
+        "delimiter": " "
+      },
+      {
+        "tag": "Model"
+      }
+    ],
+    [
+      {
+        "tag": "LensMake",
+        "delimiter": " "
+      },
+      {
+        "tag": "LensModel"
+      }
+    ],
+    [
+      {
+        "tag": "FocalLength",
+        "delimiter": "/"
+      },
+      {
+        "tag": "FocalLengthIn35mmFormat"
+      }
+    ],
+    [
+      {
+        "tag": "ApertureValue",
+        "prefix": "f/",
+        "delimiter": " | "
+      },
+      {
+        "tag": "ShutterSpeed"
+      },
+      {
+        "tag": "ISO",
+        "prefix": "ISO"
+      }
+    ],
+    [
+      {
+        "tag": "PictureMode",
+        "delimiter": " | "
+      },
+      {
+        "tag": "ShutterType"
+      },
+      {
+        "tag": "AFMode"
+      }
+    ],
+    [
+      {
+        "tag": "FilmMode",
+        "delimiter": " | "
+      },
+      {
+        "tag": "GrainEffectRoughness",
+        "prefix": "Grain Roughness "
+      },
+      {
+        "tag": "GrainEffectSize",
+        "prefix": "Grain Size "
+      },
+      {
+        "tag": "ColorChromeEffect",
+        "prefix": "Chrome "
+      },
+      {
+        "tag": "ColorChromeFXBlue",
+        "prefix": "Chrome Blue "
+      }
+    ],
+    [
+      {
+        "tag": "WhiteBalance",
+        "prefix": "White Balance ",
+        "suffix": ", "
+      },
+      {
+        "tag": "WhiteBalanceFineTune",
+        "suffix": " | "
+      },
+      {
+        "tag": "DynamicRangeSetting",
+        "prefix": "Dynamic Range "
+      }
+    ],
+    [
+      {
+        "tag": "HighlightTone",
+        "prefix": "Highlight ",
+        "delimiter": " | "
+      },
+      {
+        "tag": "ShadowTone",
+        "prefix": "Shadow "
+      },
+      {
+        "tag": "Saturation",
+        "prefix": "Color "
+      },
+      {
+        "tag": "Sharpness",
+        "prefix": "Sharpness "
+      },
+      {
+        "tag": "NoiseReduction",
+        "prefix": "NR "
+      },
+      {
+        "tag": "Clarity",
+        "prefix": "Clarity "
+      }
+    ]
+  ],
+  "1": [
+    [
+      {
+        "tag": "Artist"
+      }
+    ],
+    [
+      {
+        "tag": "Make",
+        "delimiter": " "
+      },
+      {
+        "tag": "Model"
+      }
+    ],
+    [
+      {
+        "tag": "LensMake",
+        "delimiter": " "
+      },
+      {
+        "tag": "LensModel"
+      }
+    ],
+    [
+      {
+        "tag": "FocalLength",
+        "delimiter": " | "
+      },
+      {
+        "tag": "ApertureValue",
+        "prefix": "f/"
+      },
+      {
+        "tag": "ShutterSpeed"
+      },
+      {
+        "tag": "ISO",
+        "prefix": "ISO"
+      }
+    ]
+  ]
+}

@@ -47,8 +47,9 @@ class Rename:
 
             full_filename = new_filename + f"{sequence_number:02d}-{original_filename}"
 
-            full_path = f"{self.output_directory}/{full_filename}"
-            file_modification_closure(original_filename, full_path)
+            full_path_from = f"{self.directory}/{original_filename}"
+            full_path_to = f"{self.output_directory}/{full_filename}"
+            file_modification_closure(full_path_from, full_path_to)
 
         print("Done!")
 
@@ -71,6 +72,6 @@ class Rename:
                 f"-{Tags.DateTimeOriginal}",
                 "-d",
                 "%Y%m%d-%H%M%S%z",
-                "."
+                self.directory
             )
         )

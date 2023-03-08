@@ -30,7 +30,7 @@ class Process:
             self.__texif(exiftool, meta_destination)
             self.__exif(exiftool, meta_destination)
 
-    def __rename(self, exiftool, image_destination):
+    def __rename(self, exiftool: ExifTool, image_destination: str):
         print("\nRenaming...\n")
         rename = Rename(
             self.initials,
@@ -45,7 +45,7 @@ class Process:
         else:
             rename.do_rename(exiftool, Rename.do_rename_move)
 
-    def __texif(self, exiftool, meta_destination):
+    def __texif(self, exiftool: ExifTool, meta_destination: str):
         meta_simple_destination = f"{meta_destination}/simple"
         meta_full_destination = f"{meta_destination}/full"
 
@@ -54,7 +54,7 @@ class Process:
 
         print("\nGenerating TEXIF files...\n")
 
-    def __exif(self, exiftool, meta_destination):
+    def __exif(self, exiftool: ExifTool, meta_destination: str):
         meta_mie_destination = f"{meta_destination}/mie"
 
         Util.create_directory_or_abort(meta_mie_destination)

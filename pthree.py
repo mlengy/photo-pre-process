@@ -75,8 +75,8 @@ def texif(
             help="Level of generated text EXIF data to use, 3 is most detailed"
         ),
         preset: Optional[str] = typer.Option(
-            "fuji",
-            help="Which TEXIF preset to use: fuji"
+            "fujifilmxt5",
+            help="Which TEXIF preset to use: fujifilmxt5"
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
