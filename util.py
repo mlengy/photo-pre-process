@@ -2,16 +2,18 @@ import os
 import shutil
 import typer
 
+from exiftool import ExifTool
+
 
 class Util:
     @staticmethod
-    def verify_directory(directory):
+    def verify_directory(directory: str):
         if not os.path.isdir(directory):
             print(f"Directory [{directory}] does not exist!")
             raise typer.Exit(code=1)
 
     @staticmethod
-    def create_directory_or_abort(directory):
+    def create_directory_or_abort(directory: str):
         if not os.path.isdir(directory):
             print(f"Creating directory [{directory}] since it does not exist.")
             os.makedirs(directory)
@@ -24,5 +26,9 @@ class Util:
             else:
                 raise typer.Exit(code=1)
 
-    # @staticmethod
-    # def veri
+    @staticmethod
+    def verify_extension_exists(exiftool: ExifTool, extension: str):
+        result = exiftool.execute_with_extension(extension, "-J", "-DateTimeOriginal", ".")
+        if not result:
+            print(f"There are no files with extension [{extension}] in the current directory!")
+            raise typer.Exit(code=1)

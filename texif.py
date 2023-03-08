@@ -4,7 +4,7 @@ from util import Util
 
 
 class Texif:
-    def __init__(self, directory, type, level, extension):
+    def __init__(self, directory: str, type: str, level: int, extension: str):
         self.directory = directory
         self.type = type
         self.level = level

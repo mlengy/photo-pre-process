@@ -4,7 +4,7 @@ from util import Util
 
 
 class Exif:
-    def __init__(self, directory, level, extension):
+    def __init__(self, directory: str, level: int, extension: str):
         self.directory = directory
         self.level = level
         self.extension = extension

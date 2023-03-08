@@ -22,7 +22,7 @@ class ExifTool(object):
         self.process.stdin.flush()
 
     def execute_with_extension(self, extension, *args):
-        self.execute(extension, args)
+        return self.execute("-ext", extension, *args)
 
     def execute(self, *args):
         args = args + ("-execute\n",)
