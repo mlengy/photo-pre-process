@@ -93,7 +93,7 @@ class Texif:
 
             Printer.waiting(f"Writing full HTML dump to [{full_path_to}]...", prefix="    ")
 
-            with open(full_path_to, "a") as texif_file:
+            with open(full_path_to, "w") as texif_file:
                 texif_file.write(full_html_dump)
 
             Printer.done(prefix="    ")
@@ -137,7 +137,7 @@ class Texif:
 
             Printer.waiting(f"Writing TEXIF to [{full_path_to}]...", prefix="    ")
 
-            with open(full_path_to, "a") as texif_file:
+            with open(full_path_to, "w") as texif_file:
                 Util.write_with_newline(texif_file, file_tags[Tags.FileName])
                 Util.write_with_newline(texif_file, file_tags[Tags.DateTimeOriginal])
                 Util.write_with_newline(texif_file)
