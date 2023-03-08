@@ -52,12 +52,16 @@ def texif(
             "./",
             help="The directory containing photos to process"
         ),
+        type: Optional[str] = typer.Option(
+            "both",
+            help="The type of texif: simple, full, or both"
+        ),
         level: Optional[int] = typer.Option(
             3,
             help="Level of generated text EXIF data to use"
         )
 ):
-    Texif(directory, level).texif()
+    Texif(directory, type, level).texif()
 
 
 @app.command(help="Generates EXIF files for photos")

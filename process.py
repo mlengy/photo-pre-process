@@ -14,7 +14,6 @@ class Process:
 
         for level, processor in Process.level_map.items():
             if self.level >= level:
-                # noinspection PyArgumentList
                 processor(self)
 
     def __process_one(self):
