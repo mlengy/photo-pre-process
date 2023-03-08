@@ -3,8 +3,8 @@ import shutil
 import json
 import typer
 
-from constants import Tags
-from exiftool import ExifTool
+from util.constants import Tags
+from util.exiftool import ExifTool
 
 
 class Util:

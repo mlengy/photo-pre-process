@@ -1,10 +1,10 @@
 from typing import Optional
 import typer
 
-from process import Process
-from rename import Rename
-from texif import Texif
-from exif import Exif
+from commands.process import Process
+from commands.rename import Rename
+from commands.texif import Texif
+from commands.exif import Exif
 
 
 app = typer.Typer()
@@ -72,14 +72,18 @@ def texif(
         ),
         level: Optional[int] = typer.Option(
             3,
-            help="Level of generated text EXIF data to use"
+            help="Level of generated text EXIF data to use, 3 is most detailed"
+        ),
+        preset: Optional[str] = typer.Option(
+            "fuji",
+            help="Which TEXIF preset to use: fuji"
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
             help="Extension of files to process"
         )
 ):
-    Texif(directory, output_directory, type, level, extension).texif()
+    Texif(directory, output_directory, type, level, preset, extension).texif()
 
 
 @app.command(help="Generates EXIF files for photos")

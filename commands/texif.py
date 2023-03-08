@@ -1,15 +1,14 @@
-import typer
-
-from util import Util
-from exiftool import ExifTool
+from util.helpers import Util
+from util.exiftool import ExifTool
 
 
 class Texif:
-    def __init__(self, directory: str, output_directory: str, type: str, level: int, extension: str):
+    def __init__(self, directory: str, output_directory: str, type: str, level: int, preset: str, extension: str):
         self.directory = directory
         self.output_directory = output_directory
         self.type = type
         self.level = level
+        self.preset = preset
         self.extension = extension
 
     def texif(self):
@@ -24,7 +23,6 @@ class Texif:
 
     def do_texif(self, exiftool):
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
-        print(file_names)
 
         for level, processor in Texif.level_map.items():
             if self.level >= level:

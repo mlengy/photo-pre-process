@@ -1,7 +1,5 @@
-import typer
-
-from util import Util
-from exiftool import ExifTool
+from util.helpers import Util
+from util.exiftool import ExifTool
 
 
 class Exif:

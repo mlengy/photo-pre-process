@@ -1,10 +1,9 @@
 import shutil
 import json
-import typer
 
-from util import Util
-from constants import Tags
-from exiftool import ExifTool
+from util.helpers import Util
+from util.constants import Tags
+from util.exiftool import ExifTool
 
 
 class Rename:

@@ -1,8 +1,6 @@
-import typer
-
-from util import Util
-from rename import Rename
-from exiftool import ExifTool
+from util.helpers import Util
+from commands.rename import Rename
+from util.exiftool import ExifTool
 
 
 class Process:
