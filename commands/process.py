@@ -1,6 +1,6 @@
 from util.helpers import Util, Printer
 from commands.rename import Rename
-from commands.texif import Texif
+from commands.texif import Texif, Preset, TexifType, TexifLevel
 from commands.exif import Exif
 from util.exiftool import ExifTool
 
@@ -8,7 +8,7 @@ from util.exiftool import ExifTool
 class Process:
     meta_destination_name = "meta"
 
-    def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, preset: str, extension: str):
+    def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, preset: Preset, extension: str):
         self.initials = initials
         self.directory = directory
         self.output_directory = output_directory
@@ -67,8 +67,8 @@ class Process:
         texif = Texif(
             directory=image_destination,
             output_directory=meta_destination,
-            type="full",
-            level=3,
+            type=TexifType.full,
+            level=TexifLevel.high,
             preset=self.preset,
             extension=self.extension
         )

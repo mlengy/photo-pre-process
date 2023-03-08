@@ -1,6 +1,7 @@
 import os
 import traceback
 import json
+from enum import Enum
 from typing import TextIO
 import typer
 
@@ -9,7 +10,24 @@ from util.constants import Tags
 from util.exiftool import ExifTool
 
 
+class Preset(str, Enum):
+    fujifilmxt5 = "fujifilmxt5"
+
+
+class TexifType(str, Enum):
+    simple = "simple"
+    full = "full"
+    both = "both"
+
+
+class TexifLevel(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
+
 class Texif:
+    json_level_map = {TexifLevel.low.value: 1, TexifLevel.medium.value: 2, TexifLevel.high.value: 3}
     json_level_required_tags = "0"
     json_level_highest = 3
 
@@ -22,12 +40,12 @@ class Texif:
     file_break_begin_level = "================ BEGIN LEVEL {} ================"
     file_break_end_level = "================= END LEVEL {} ================="
 
-    def __init__(self, directory: str, output_directory: str, type: str, level: int, preset: str, extension: str):
+    def __init__(self, directory: str, output_directory: str, type: TexifType, level: TexifLevel, preset: Preset, extension: str):
         self.directory = directory
         self.output_directory = output_directory
-        self.type = type
-        self.level = level
-        self.preset = preset
+        self.type = type.value
+        self.level = Texif.json_level_map[level.value]
+        self.preset = preset.value
         self.extension = extension
         self.compiled_presets: list[list[tuple[str, list[str]]]] = []
 
