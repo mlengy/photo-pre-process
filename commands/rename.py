@@ -1,6 +1,8 @@
 import json
 import shutil
 
+from rich.progress import Progress
+
 from util.config import Config
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -21,6 +23,8 @@ class Rename:
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
         self.extension = extension
+        self.step_count = 1
+        self.total_steps = 1
 
     def rename(self):
         Rename.start_message()
@@ -30,40 +34,52 @@ class Rename:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
 
             Util.create_directory_or_abort(self.output_directory)
 
             if self.keep_original:
-                self.do_rename(exiftool, Rename.do_rename_copy)
+                self.do_rename(exiftool, Rename.do_rename_copy, num_images)
             else:
-                self.do_rename(exiftool, Rename.do_rename_move)
+                self.do_rename(exiftool, Rename.do_rename_move, num_images)
 
         Printer.done_all()
 
-    def do_rename(self, exiftool: ExifTool, file_modification_closure):
+    def do_rename(self, exiftool: ExifTool, file_modification_closure, num_images: int):
         formatted_date_times = self.__get_formatted_date_time(exiftool)
 
         previous_filename = ""
         sequence_number = 0
 
-        for image_metadata in formatted_date_times:
-            original_filename = image_metadata[Tags.FileName]
-            formatted_date_time = image_metadata[Tags.DateTimeOriginal]
+        with Progress() as progress:
+            progress_task = progress.add_task(
+                Printer.progress_label(
+                    "Rename",
+                    self.step_count,
+                    self.total_steps
+                ),
+                total=num_images
+            )
 
-            new_filename = f"{self.initials.upper()}-{formatted_date_time}-"
+            for count, image_metadata in enumerate(formatted_date_times):
+                original_filename = image_metadata[Tags.FileName]
+                formatted_date_time = image_metadata[Tags.DateTimeOriginal]
 
-            if new_filename == previous_filename:
-                sequence_number += 1
-            else:
-                previous_filename = new_filename
-                sequence_number = 0
+                new_filename = f"{self.initials.upper()}-{formatted_date_time}-"
 
-            full_filename = new_filename + f"{sequence_number:02d}-{original_filename}"
+                if new_filename == previous_filename:
+                    sequence_number += 1
+                else:
+                    previous_filename = new_filename
+                    sequence_number = 0
 
-            full_path_from = f"{self.directory}/{original_filename}"
-            full_path_to = f"{self.output_directory}/{full_filename}"
-            file_modification_closure(full_path_from, full_path_to)
+                full_filename = new_filename + f"{sequence_number:02d}-{original_filename}"
+
+                full_path_from = f"{self.directory}/{original_filename}"
+                full_path_to = f"{self.output_directory}/{full_filename}"
+                file_modification_closure(full_path_from, full_path_to)
+
+                progress.update(progress_task, completed=count + 1)
 
         Printer.done()
 

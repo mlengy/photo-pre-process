@@ -8,6 +8,8 @@ from util.helpers import Util, Printer
 class Process:
     meta_destination_name = "meta"
 
+    total_steps = 4
+
     def __init__(
             self,
             initials: str,
@@ -23,6 +25,7 @@ class Process:
         self.keep_original = keep_original
         self.preset = preset
         self.extension = extension
+        self.step_count = 1
 
     def process(self):
         Process.start_message()
@@ -32,7 +35,7 @@ class Process:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
 
             Util.create_directory_or_abort(self.output_directory)
 
@@ -41,13 +44,13 @@ class Process:
 
             Util.create_directory_or_abort(image_destination)
 
-            self.__rename(exiftool, image_destination)
-            self.__texif(exiftool, image_destination, meta_destination)
-            self.__exif(exiftool, image_destination, meta_destination)
+            self.__rename(exiftool, image_destination, num_images)
+            self.__texif(exiftool, image_destination, meta_destination, num_images)
+            self.__exif(exiftool, image_destination, meta_destination, num_images)
 
         Printer.done_all()
 
-    def __rename(self, exiftool: ExifTool, image_destination: str):
+    def __rename(self, exiftool: ExifTool, image_destination: str, num_images: int):
         Rename.start_message()
 
         rename = Rename(
@@ -58,14 +61,18 @@ class Process:
             extension=self.extension
         )
 
-        if self.keep_original:
-            rename.do_rename(exiftool, Rename.do_rename_copy)
-        else:
-            rename.do_rename(exiftool, Rename.do_rename_move)
+        rename.step_count = self.step_count
+        rename.total_steps = Process.total_steps
 
+        if self.keep_original:
+            rename.do_rename(exiftool, Rename.do_rename_copy, num_images)
+        else:
+            rename.do_rename(exiftool, Rename.do_rename_move, num_images)
+
+        self.step_count += 1
         Printer.done(suffix=" rename")
 
-    def __texif(self, exiftool: ExifTool, image_destination: str, meta_destination: str):
+    def __texif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_images: int):
         Texif.start_message()
 
         meta_simple_destination = f"{meta_destination}/simple"
@@ -83,12 +90,18 @@ class Process:
             extension=self.extension
         )
 
-        texif.do_texif_simple(exiftool, meta_simple_destination)
-        texif.do_texif_full(exiftool, meta_full_destination)
+        texif.step_count = self.step_count
+        texif.total_steps = Process.total_steps
 
+        texif.do_texif_simple(exiftool, num_images, meta_simple_destination)
+
+        self.step_count += 1
+        texif.do_texif_full(exiftool, num_images, meta_full_destination)
+
+        self.step_count += 1
         Printer.done(suffix=" TEXIF")
 
-    def __exif(self, exiftool: ExifTool, image_destination: str, meta_destination: str):
+    def __exif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_images: int):
         Exif.start_message()
 
         meta_mie_destination = f"{meta_destination}/mie"
@@ -101,7 +114,10 @@ class Process:
             extension=self.extension
         )
 
-        exif.do_exif(exiftool)
+        exif.step_count = self.step_count
+        exif.total_steps = Process.total_steps
+
+        exif.do_exif(exiftool, num_images)
 
         Printer.done(suffix=" EXIF")
 

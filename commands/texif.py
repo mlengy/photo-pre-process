@@ -5,6 +5,7 @@ from enum import Enum
 from typing import TextIO
 
 import typer
+from rich.progress import Progress
 
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -52,11 +53,13 @@ class Texif:
     ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
-        self.type = type.value
+        self.type = type.value.lower()
         self.level = Texif.json_level_map[level.value]
         self.preset = preset.value
         self.extension = extension
         self.compiled_presets: list[list[tuple[str, list[str]]]] = []
+        self.step_count = 1
+        self.total_steps = 2 if self.type == "both" else 1
 
     def texif(self):
         Texif.start_message()
@@ -64,51 +67,63 @@ class Texif:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
 
             Util.create_directory_or_abort(self.output_directory)
 
-            type_cleaned = self.type.lower()
-
             type_caught = False
-            if type_cleaned == "simple" or type_cleaned == "both":
+            if self.type == "simple" or self.type == "both":
                 type_caught = True
-                self.do_texif_simple(exiftool)
-            if type_cleaned == "full" or type_cleaned == "both":
+                self.do_texif_simple(exiftool, num_images)
+                self.step_count += 1
+            if self.type == "full" or self.type == "both":
                 type_caught = True
-                self.do_texif_full(exiftool)
+                self.do_texif_full(exiftool, num_images)
 
             if not type_caught:
                 Printer.error_and_abort(f"Type [{self.type}] is not a valid type!")
 
         Printer.done_all()
 
-    def do_texif_full(self, exiftool: ExifTool, output_directory: str = None):
+    def do_texif_full(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
         print("\n🌐 Starting TEXIF full (HTML)! 🌐\n")
 
         output_directory_override = self.output_directory if not output_directory else output_directory
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
-        for file_name in file_names:
-            Printer.waiting(f"Generating full HTML dump for [{file_name}]...")
-            full_html_dump = exiftool.execute_with_extension(
-                self.extension,
-                f"-{Tags.HTMLDump}",
-                f"{self.directory}/{file_name}"
+        with Progress() as progress:
+            progress_task = progress.add_task(
+                Printer.progress_label(
+                    "TEXIF full",
+                    self.step_count,
+                    self.total_steps
+                ),
+                total=num_images
             )
 
-            file_name_extensionless = os.path.splitext(file_name)[0]
-            full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
+            for count, file_name in enumerate(file_names):
+                Printer.waiting(f"Generating full HTML dump for [{file_name}]...")
+                full_html_dump = exiftool.execute_with_extension(
+                    self.extension,
+                    f"-{Tags.HTMLDump}",
+                    f"{self.directory}/{file_name}"
+                )
 
-            Printer.waiting(f"Writing full HTML dump to [{full_path_to}]...", prefix="    ")
+                file_name_extensionless = os.path.splitext(file_name)[0]
+                full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
 
-            with open(full_path_to, "w") as texif_file:
-                texif_file.write(full_html_dump)
+                Printer.waiting(f"Writing full HTML dump to [{full_path_to}]...", prefix="    ")
 
-            Printer.done(prefix="    ")
+                with open(full_path_to, "w") as texif_file:
+                    texif_file.write(full_html_dump)
+
+                Printer.done(prefix="    ")
+
+                progress.update(progress_task, completed=count + 1)
+
         Printer.done()
 
-    def do_texif_simple(self, exiftool: ExifTool, output_directory: str = None):
+    def do_texif_simple(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
         print("\n📋 Starting TEXIF simple (TXT)! 📋\n")
 
         output_directory_override = self.output_directory if not output_directory else output_directory
@@ -124,38 +139,51 @@ class Texif:
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
-        for file_name in file_names:
-            Printer.waiting(f"Generating simple TEXIF for [{file_name}]...")
+        with Progress() as progress:
+            progress_task = progress.add_task(
+                Printer.progress_label(
+                    "TEXIF simple",
+                    self.step_count,
+                    self.total_steps
+                ),
+                total=num_images
+            )
 
-            Printer.waiting(f"Building tag JSON...", prefix="    ")
-            file_tags = json.loads(
-                exiftool.execute_with_extension(
-                    self.extension,
-                    f"-{Tags.JSONFormat}",
-                    f"{self.directory}/{file_name}",
-                    *required_tags_formatted
-                )
-            )[0]
+            for count, file_name in enumerate(file_names):
+                Printer.waiting(f"Generating simple TEXIF for [{file_name}]...")
 
-            for required_tag in required_tags:
-                if required_tag not in file_tags:
-                    Printer.warning(f"Warning: could not find tag [{required_tag}]!", prefix="    ")
+                Printer.waiting(f"Building tag JSON...", prefix="    ")
+                file_tags = json.loads(
+                    exiftool.execute_with_extension(
+                        self.extension,
+                        f"-{Tags.JSONFormat}",
+                        f"{self.directory}/{file_name}",
+                        *required_tags_formatted
+                    )
+                )[0]
 
-            file_name_extensionless = os.path.splitext(file_name)[0]
-            full_path_to = f"{output_directory_override}/{file_name_extensionless}.txt"
+                for required_tag in required_tags:
+                    if required_tag not in file_tags:
+                        Printer.warning(f"Warning: could not find tag [{required_tag}]!", prefix="    ")
 
-            Printer.waiting(f"Writing TEXIF to [{full_path_to}]...", prefix="    ")
+                file_name_extensionless = os.path.splitext(file_name)[0]
+                full_path_to = f"{output_directory_override}/{file_name_extensionless}.txt"
 
-            with open(full_path_to, "w") as texif_file:
-                Util.write_with_newline(texif_file, file_tags[Tags.FileName])
-                Util.write_with_newline(texif_file, file_tags[Tags.DateTimeOriginal])
-                Util.write_with_newline(texif_file)
+                Printer.waiting(f"Writing TEXIF to [{full_path_to}]...", prefix="    ")
 
-                for level in range(1, Texif.json_level_highest + 1):
-                    if self.level >= level:
-                        self.__process_level(level, file_tags, texif_file)
+                with open(full_path_to, "w") as texif_file:
+                    Util.write_with_newline(texif_file, file_tags[Tags.FileName])
+                    Util.write_with_newline(texif_file, file_tags[Tags.DateTimeOriginal])
+                    Util.write_with_newline(texif_file)
 
-            Printer.done(prefix="    ")
+                    for level in range(1, Texif.json_level_highest + 1):
+                        if self.level >= level:
+                            self.__process_level(level, file_tags, texif_file)
+
+                Printer.done(prefix="    ")
+
+                progress.update(progress_task, completed=count + 1)
+
         Printer.done()
 
     def __process_level(self, level: int, file_tags: dict, texif_file: TextIO):

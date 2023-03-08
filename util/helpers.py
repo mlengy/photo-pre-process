@@ -37,8 +37,11 @@ class Util:
 
     @staticmethod
     def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "./"):
-        if not Util._get_valid_file_names(exiftool, extension, directory):
+        valid_file_names = Util._get_valid_file_names(exiftool, extension, directory)
+        if not valid_file_names:
             Printer.error_and_abort(f"There are no files with extension [{extension}] in directory [{directory}]!")
+        else:
+            return len(json.loads(valid_file_names))
 
     @staticmethod
     def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./"):
@@ -63,6 +66,10 @@ class Printer:
     @staticmethod
     def prompt_continue(text: str):
         typer.confirm(f"⁉️  {text}", abort=True)
+
+    @staticmethod
+    def progress_label(label: str, step: int, total: int):
+        return f"[magenta]{label} (step {step} of {total})\n"
 
     @staticmethod
     def divider():
