@@ -68,7 +68,7 @@ def texif(
         ),
         type: Optional[str] = typer.Option(
             "both",
-            help="The type of texif: simple, full, or both"
+            help="The type of TEXIF: simple, full, or both"
         ),
         level: Optional[int] = typer.Option(
             3,
@@ -92,16 +92,12 @@ def exif(
             "output",
             help="The directory to output result of processing"
         ),
-        level: Optional[int] = typer.Option(
-            2,
-            help="Level of generated EXIF data to use"
-        ),
         extension: Optional[str] = typer.Option(
             "JPG",
             help="Extension of files to process"
         )
 ):
-    Exif(directory, output_directory, level, extension).exif()
+    Exif(directory, output_directory, extension).exif()
 
 
 def main():

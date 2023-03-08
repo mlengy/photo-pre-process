@@ -5,10 +5,9 @@ from exiftool import ExifTool
 
 
 class Exif:
-    def __init__(self, directory: str, output_directory: str, level: int, extension: str):
+    def __init__(self, directory: str, output_directory: str, extension: str):
         self.directory = directory
         self.output_directory = output_directory
-        self.level = level
         self.extension = extension
 
     def exif(self):
