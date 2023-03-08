@@ -10,6 +10,10 @@ from util.exiftool import ExifTool
 
 class Util:
     @staticmethod
+    def strip_slashes(directory: str):
+        return directory.strip("/")
+
+    @staticmethod
     def verify_directory(directory: str):
         print(f"📁 Using [{directory}] as working directory...")
         if not os.path.isdir(directory):

@@ -41,8 +41,8 @@ class Texif:
     file_break_end_level = "================= END LEVEL {} ================="
 
     def __init__(self, directory: str, output_directory: str, type: TexifType, level: TexifLevel, preset: Preset, extension: str):
-        self.directory = directory
-        self.output_directory = output_directory
+        self.directory = Util.strip_slashes(directory)
+        self.output_directory = Util.strip_slashes(output_directory)
         self.type = type.value
         self.level = Texif.json_level_map[level.value]
         self.preset = preset.value

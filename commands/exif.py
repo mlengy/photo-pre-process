@@ -6,8 +6,8 @@ from util.exiftool import ExifTool
 
 class Exif:
     def __init__(self, directory: str, output_directory: str, extension: str):
-        self.directory = directory
-        self.output_directory = output_directory
+        self.directory = Util.strip_slashes(directory)
+        self.output_directory = Util.strip_slashes(output_directory)
         self.extension = extension
 
     def exif(self):

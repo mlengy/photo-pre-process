@@ -10,8 +10,8 @@ class Process:
 
     def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, preset: Preset, extension: str):
         self.initials = initials
-        self.directory = directory
-        self.output_directory = output_directory
+        self.directory = Util.strip_slashes(directory)
+        self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
         self.preset = preset
         self.extension = extension
