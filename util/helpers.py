@@ -41,4 +41,9 @@ class Util:
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
-        return exiftool.execute_with_extension(extension, "-J", "-FileName", directory)
+        return exiftool.execute_with_extension(
+            extension,
+            f"-{Tags.JSONFormat}",
+            f"-{Tags.FileName}",
+            directory
+        )

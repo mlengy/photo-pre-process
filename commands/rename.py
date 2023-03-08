@@ -66,7 +66,7 @@ class Rename:
         return json.loads(
             exiftool.execute_with_extension(
                 self.extension,
-                "-J",
+                f"-{Tags.JSONFormat}",
                 f"-{Tags.FileName}",
                 f"-{Tags.DateTimeOriginal}",
                 "-d",
