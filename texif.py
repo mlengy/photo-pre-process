@@ -20,9 +20,15 @@ class Texif:
 
             Util.create_directory_or_abort(self.output_directory)
 
-            for level, processor in Texif.level_map.items():
-                if self.level >= level:
-                    processor(self)
+            self.do_texif(exiftool)
+
+    def do_texif(self, exiftool):
+        file_names = Util.get_valid_file_names(exiftool, self.extension)
+        print(file_names)
+
+        for level, processor in Texif.level_map.items():
+            if self.level >= level:
+                processor(self)
 
     def __process_one(self):
         pass
