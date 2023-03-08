@@ -1,5 +1,7 @@
 import typer
 
+from util import Util
+
 
 class Rename:
     def __init__(self, directory, in_place, skip_invalid):
@@ -8,5 +10,4 @@ class Rename:
         self.skip_invalid = skip_invalid
 
     def rename(self):
-        if (True):
-            raise typer.Exit(code=1)
+        Util.verify_directory(self.directory)

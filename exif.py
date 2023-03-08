@@ -1,5 +1,7 @@
 import typer
 
+from util import Util
+
 
 class Exif:
     def __init__(self, directory, level):
@@ -7,4 +9,4 @@ class Exif:
         self.level = level
 
     def exif(self):
-        pass
+        Util.verify_directory(self.directory)

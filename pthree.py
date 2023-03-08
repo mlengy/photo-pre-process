@@ -1,3 +1,4 @@
+from typing import Optional
 import typer
 
 from process import Process
@@ -19,7 +20,7 @@ def process(
             "output",
             help="The directory to output result of processing"
         ),
-        level: int = typer.Argument(
+        level: Optional[int] = typer.Option(
             3,
             help="Level of processing to use"
         )
@@ -51,7 +52,7 @@ def texif(
             "./",
             help="The directory containing photos to process"
         ),
-        level: int = typer.Argument(
+        level: Optional[int] = typer.Option(
             3,
             help="Level of generated text EXIF data to use"
         )
@@ -65,7 +66,7 @@ def exif(
             "./",
             help="The directory containing photos to process"
         ),
-        level: int = typer.Argument(
+        level: Optional[int] = typer.Option(
             2,
             help="Level of generated EXIF data to use"
         )
@@ -75,3 +76,7 @@ def exif(
 
 def main():
     app()
+
+
+if __name__ == "__main__":
+    main()

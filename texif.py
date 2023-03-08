@@ -1,5 +1,7 @@
 import typer
 
+from util import Util
+
 
 class Texif:
     def __init__(self, directory, level):
@@ -7,4 +9,4 @@ class Texif:
         self.level = level
 
     def texif(self):
-        pass
+        Util.verify_directory(self.directory)
