@@ -70,8 +70,7 @@ class Texif:
                 self.do_texif_full(exiftool)
 
             if not type_caught:
-                Printer.error(f"Type [{self.type}] is not a valid type!")
-                raise typer.Abort()
+                Printer.error_and_abort(f"Type [{self.type}] is not a valid type!")
 
         Printer.done_all()
 
@@ -108,8 +107,7 @@ class Texif:
         presets = {os.path.splitext(preset_path)[0] for preset_path in os.listdir(preset_directory)}
 
         if self.preset not in presets:
-            Printer.error(f"Cannot find preset [{self.preset}]!")
-            raise typer.Abort()
+            Printer.error_and_abort(f"Cannot find preset [{self.preset}]!")
 
         required_tags = self.__compile_preset(preset_directory)
         required_tags_formatted = [f"-{tag}" for tag in required_tags]

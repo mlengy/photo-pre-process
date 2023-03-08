@@ -19,6 +19,8 @@ class Process:
     def process(self):
         Process.start_message()
 
+        Rename.verify_initials(self.initials)
+        Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:

@@ -1,5 +1,6 @@
 import shutil
 import json
+import typer
 
 from util.helpers import Util, Printer
 from util.constants import Tags
@@ -17,6 +18,8 @@ class Rename:
     def rename(self):
         Rename.start_message()
 
+        Rename.verify_initials(self.initials)
+        Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
@@ -79,6 +82,17 @@ class Rename:
                 self.directory
             )
         )
+
+    @staticmethod
+    def verify_initials(initials: str):
+        if not (initials.isalnum() and 1 < len(initials) <= 10):
+            Printer.error_and_abort(f"Initials [{initials}] is not valid!")
+
+    @staticmethod
+    def verify_possible_directory(directory: str):
+        if Util.is_directory_valid(directory):
+            Printer.warning(f"It looks like your initials {[directory]} is a directory.")
+            Printer.prompt_continue(f"Is this correct?")
 
     @staticmethod
     def start_message():

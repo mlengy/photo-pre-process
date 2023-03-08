@@ -30,6 +30,7 @@ def process(
         ),
         preset: Optional[Preset] = typer.Option(
             Preset.fujifilmxt5,
+            case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
         extension: Optional[str] = typer.Option(
@@ -78,14 +79,17 @@ def texif(
         ),
         type: Optional[TexifType] = typer.Option(
             TexifType.both,
+            case_sensitive=False,
             help="The type of TEXIF to generate."
         ),
         level: Optional[TexifLevel] = typer.Option(
             TexifLevel.high,
+            case_sensitive=False,
             help="The level of generated TEXIF data to use, only applies to simple TEXIFs."
         ),
         preset: Optional[Preset] = typer.Option(
             Preset.fujifilmxt5,
+            case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
         extension: Optional[str] = typer.Option(
