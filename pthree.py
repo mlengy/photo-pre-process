@@ -21,12 +21,16 @@ def process(
             "output",
             help="The directory to output result of processing"
         ),
+        keep_original: bool = typer.Option(
+            False,
+            help="Rename original files and make a copy"
+        ),
         extension: Optional[str] = typer.Option(
             "JPG",
             help="Extension of files to process"
         )
 ):
-    Process(initials, directory, output_directory, extension).process()
+    Process(initials, directory, output_directory, keep_original, extension).process()
 
 
 @app.command(help="Rename photos to a consistent format")
@@ -40,20 +44,16 @@ def rename(
             "output",
             help="The directory to output result of processing"
         ),
-        in_place: bool = typer.Option(
-            True,
-            help="Rename original files without making a copy"
-        ),
-        skip_invalid: bool = typer.Option(
+        keep_original: bool = typer.Option(
             False,
-            help="Soft skip files that cannot be renamed"
+            help="Rename original files and make a copy"
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
             help="Extension of files to process"
         )
 ):
-    Rename(initials, directory, output_directory, in_place, skip_invalid, extension).rename()
+    Rename(initials, directory, output_directory, keep_original, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos")

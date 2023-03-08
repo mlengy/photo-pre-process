@@ -8,12 +8,11 @@ from exiftool import ExifTool
 
 
 class Rename:
-    def __init__(self, initials: str, directory: str, output_directory: str, in_place: bool, skip_invalid: bool, extension: str):
+    def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, extension: str):
         self.initials = initials
         self.directory = directory
         self.output_directory = output_directory
-        self.in_place = in_place
-        self.skip_invalid = skip_invalid
+        self.keep_original = keep_original
         self.extension = extension
 
     def rename(self):
@@ -24,12 +23,12 @@ class Rename:
 
             Util.create_directory_or_abort(self.output_directory)
 
-            if self.in_place:
-                self._do_rename(exiftool, Rename._do_rename_move)
+            if self.keep_original:
+                self.do_rename(exiftool, Rename.do_rename_copy)
             else:
-                self._do_rename(exiftool, Rename._do_rename_copy)
+                self.do_rename(exiftool, Rename.do_rename_move)
 
-    def _do_rename(self, exiftool: ExifTool, file_modification_closure):
+    def do_rename(self, exiftool: ExifTool, file_modification_closure):
         formatted_date_times = self.__get_formatted_date_time(exiftool)
 
         previous_filename = ""
@@ -55,12 +54,12 @@ class Rename:
         print("Done!")
 
     @staticmethod
-    def _do_rename_copy(from_path: str, to_path: str):
+    def do_rename_copy(from_path: str, to_path: str):
         print(f"Copying [{from_path}] to [{to_path}]...")
         shutil.copy2(from_path, to_path)
 
     @staticmethod
-    def _do_rename_move(from_path: str, to_path: str):
+    def do_rename_move(from_path: str, to_path: str):
         print(f"Moving [{from_path}] to [{to_path}]...")
         shutil.move(from_path, to_path)
 
