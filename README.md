@@ -3,6 +3,8 @@
 
 #### Utility scripts to assist in renaming and generating metadata files for digital photos.
 
+I created this utility to suit my own personal digital photography workflow. It probably won't work for you. Feel free to fork and modify to suit your needs.
+
 ## Requirements
 
 This script requires Python 3.9.
