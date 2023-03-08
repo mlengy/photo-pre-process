@@ -17,12 +17,12 @@ This script depends on both [`exiftool`](https://exiftool.org/) and [`typer`](ht
 
 This utility can only be installed from source.
 
-1. Clone this repository
-2. Navigate to the cloned repository 
+1. Clone this repository.
+2. Navigate to the cloned repository.
 ```
 cd [cloned repository directory]
 ```
-3. Use pip to install the package locally
+3. Use pip to install the package locally.
 ```
 pip install .
 ```
@@ -31,9 +31,9 @@ pip install .
 
 Invoke by running `pthree`.
 
-- `pthree rename` to batch rename photos using EXIF date and time data
-- `pthree texif` to automatically generate human readable text EXIF data in different formats according to presets
-- `pthree exif` to automatically generate binary EXIF sidecar files
-- `pthree process` as a shortcut to do all three above actions at the same time
+- `pthree rename` to batch rename photos using EXIF date and time data.
+- `pthree texif` to automatically generate human readable text EXIF data in different formats according to presets.
+- `pthree exif` to automatically generate binary EXIF sidecar files.
+- `pthree process` as a shortcut to do all three above actions at the same time.
 
 For more information, run `pthree --help`.
