@@ -31,4 +31,9 @@ pip install .
 
 Invoke by running `pthree`.
 
+- `pthree rename` to batch rename photos using EXIF date and time data
+- `pthree texif` to automatically generate human readable text EXIF data in different formats according to presets
+- `pthree exif` to automatically generate binary EXIF sidecar files
+- `pthree process` as a shortcut to do all three above actions at the same time
+
 For more information, run `pthree --help`.
