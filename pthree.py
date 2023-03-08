@@ -12,6 +12,7 @@ app = typer.Typer()
 
 @app.command(help="Renames, generates text EXIF, and generates EXIF files for photos")
 def process(
+        initials: str,
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to process"
@@ -25,14 +26,19 @@ def process(
             help="Extension of files to process"
         )
 ):
-    Process(directory, output_directory, extension).process()
+    Process(initials, directory, output_directory, extension).process()
 
 
 @app.command(help="Rename photos to a consistent format")
 def rename(
+        initials: str,
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to process"
+        ),
+        output_directory: str = typer.Argument(
+            "output",
+            help="The directory to output result of processing"
         ),
         in_place: bool = typer.Option(
             True,
@@ -47,7 +53,7 @@ def rename(
             help="Extension of files to process"
         )
 ):
-    Rename(directory, in_place, skip_invalid, extension).rename()
+    Rename(initials, directory, output_directory, in_place, skip_invalid, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos")
@@ -55,6 +61,10 @@ def texif(
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to process"
+        ),
+        output_directory: str = typer.Argument(
+            "output",
+            help="The directory to output result of processing"
         ),
         type: Optional[str] = typer.Option(
             "both",
@@ -69,7 +79,7 @@ def texif(
             help="Extension of files to process"
         )
 ):
-    Texif(directory, type, level, extension).texif()
+    Texif(directory, output_directory, type, level, extension).texif()
 
 
 @app.command(help="Generates EXIF files for photos")
@@ -77,6 +87,10 @@ def exif(
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to process"
+        ),
+        output_directory: str = typer.Argument(
+            "output",
+            help="The directory to output result of processing"
         ),
         level: Optional[int] = typer.Option(
             2,
@@ -87,7 +101,7 @@ def exif(
             help="Extension of files to process"
         )
 ):
-    Exif(directory, level, extension).exif()
+    Exif(directory, output_directory, level, extension).exif()
 
 
 def main():

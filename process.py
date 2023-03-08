@@ -7,7 +7,8 @@ from exiftool import ExifTool
 class Process:
     meta_destination_name = "meta"
 
-    def __init__(self, directory: str, output_directory: str, extension: str):
+    def __init__(self, initials: str, directory: str, output_directory: str, extension: str):
+        self.initials = initials
         self.directory = directory
         self.output_directory = output_directory
         self.extension = extension
