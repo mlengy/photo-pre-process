@@ -1,6 +1,7 @@
 from util.helpers import Util
 from commands.rename import Rename
 from commands.texif import Texif
+from commands.exif import Exif
 from util.exiftool import ExifTool
 
 
@@ -31,6 +32,8 @@ class Process:
             self.__rename(exiftool, image_destination)
             self.__texif(exiftool, image_destination, meta_destination)
             self.__exif(exiftool, image_destination, meta_destination)
+
+            print("\nDone! 🎉")
 
     def __rename(self, exiftool: ExifTool, image_destination: str):
         print("\nRenaming...\n")
@@ -76,4 +79,10 @@ class Process:
 
         Util.create_directory_or_abort(meta_mie_destination)
 
+        exif = Exif(
+            directory=image_destination,
+            output_directory=meta_mie_destination,
+            extension=self.extension
+        )
 
+        exif.do_exif(exiftool)
