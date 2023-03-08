@@ -20,12 +20,12 @@ def process(
             "output",
             help="The directory to output result of processing"
         ),
-        level: Optional[int] = typer.Option(
-            3,
-            help="Level of processing to use"
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            help="Extension of files to process"
         )
 ):
-    Process(directory, output_directory, level).process()
+    Process(directory, output_directory, extension).process()
 
 
 @app.command(help="Rename photos to a consistent format")
@@ -41,9 +41,13 @@ def rename(
         skip_invalid: bool = typer.Option(
             False,
             help="Soft skip files that cannot be renamed"
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            help="Extension of files to process"
         )
 ):
-    Rename(directory, in_place, skip_invalid).rename()
+    Rename(directory, in_place, skip_invalid, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos")
@@ -59,9 +63,13 @@ def texif(
         level: Optional[int] = typer.Option(
             3,
             help="Level of generated text EXIF data to use"
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            help="Extension of files to process"
         )
 ):
-    Texif(directory, type, level).texif()
+    Texif(directory, type, level, extension).texif()
 
 
 @app.command(help="Generates EXIF files for photos")
@@ -73,9 +81,13 @@ def exif(
         level: Optional[int] = typer.Option(
             2,
             help="Level of generated EXIF data to use"
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            help="Extension of files to process"
         )
 ):
-    Exif(directory, level).exif()
+    Exif(directory, level, extension).exif()
 
 
 def main():

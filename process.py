@@ -1,32 +1,27 @@
 import typer
 
 from util import Util
+from exiftool import ExifTool
 
 
 class Process:
-    def __init__(self, directory, output_directory, level):
+    meta_destination_name = "meta"
+
+    def __init__(self, directory, output_directory, extension):
         self.directory = directory
         self.output_directory = output_directory
-        self.level = level
+        self.extension = extension
 
     def process(self):
         Util.verify_directory(self.directory)
+        Util.create_directory_or_abort(self.output_directory)
 
-        for level, processor in Process.level_map.items():
-            if self.level >= level:
-                processor(self)
+        image_destination = f"{self.output_directory}/{self.extension.lower()}"
+        meta_destination = f"{image_destination}/{Process.meta_destination_name}"
+        Util.create_directory_or_abort(image_destination)
+        Util.create_directory_or_abort(f"{meta_destination}/simple")
+        Util.create_directory_or_abort(f"{meta_destination}/full")
+        Util.create_directory_or_abort(f"{meta_destination}/mie")
 
-    def __process_one(self):
-        Util.verify_or_create_directory(self.output_directory)
-
-    def __process_two(self):
-        pass
-
-    def __process_three(self):
-        pass
-
-    level_map = {
-        1: __process_one,
-        2: __process_two,
-        3: __process_three
-    }
+        with ExifTool() as et:
+            pass
