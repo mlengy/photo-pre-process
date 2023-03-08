@@ -31,13 +31,13 @@ class Util:
                 raise typer.Abort()
 
     @staticmethod
-    def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "."):
+    def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "./"):
         if not Util._get_valid_file_names(exiftool, extension, directory):
             Printer.error(f"There are no files with extension [{extension}] in directory [{directory}]!")
             raise typer.Abort()
 
     @staticmethod
-    def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "."):
+    def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./"):
         file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
         return list(map(lambda file_name: file_name[Tags.FileName], file_names))
 

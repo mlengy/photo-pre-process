@@ -1,4 +1,4 @@
-# photo-preprocess
+# photo-pre-process
 ### (`pthree` or $p^3$)
 
 #### Utility scripts to assist in renaming and generating metadata files for digital photos.
