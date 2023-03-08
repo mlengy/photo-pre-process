@@ -4,6 +4,7 @@ import shutil
 from typing import TextIO
 
 import typer
+from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -70,6 +71,10 @@ class Printer:
     @staticmethod
     def progress_label(label: str, step: int, total: int):
         return f"[magenta]{label} (step {step} of {total})\n"
+
+    @staticmethod
+    def progress_spinner():
+        return Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"))
 
     @staticmethod
     def divider():
