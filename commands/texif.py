@@ -1,13 +1,14 @@
+import json
 import os
 import traceback
-import json
 from enum import Enum
 from typing import TextIO
+
 import typer
 
-from util.helpers import Util, Printer
 from util.constants import Tags
 from util.exiftool import ExifTool
+from util.helpers import Util, Printer
 
 
 class Preset(str, Enum):
@@ -40,7 +41,15 @@ class Texif:
     file_break_begin_level = "================ BEGIN LEVEL {} ================"
     file_break_end_level = "================= END LEVEL {} ================="
 
-    def __init__(self, directory: str, output_directory: str, type: TexifType, level: TexifLevel, preset: Preset, extension: str):
+    def __init__(
+            self,
+            directory: str,
+            output_directory: str,
+            type: TexifType,
+            level: TexifLevel,
+            preset: Preset,
+            extension: str
+    ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.type = type.value

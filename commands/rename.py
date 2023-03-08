@@ -1,15 +1,21 @@
-import shutil
 import json
-import typer
+import shutil
 
 from util.config import Config
-from util.helpers import Util, Printer
 from util.constants import Tags
 from util.exiftool import ExifTool
+from util.helpers import Util, Printer
 
 
 class Rename:
-    def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, extension: str):
+    def __init__(
+            self,
+            initials: str,
+            directory: str,
+            output_directory: str,
+            keep_original: bool,
+            extension: str
+    ):
         self.initials = initials
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)

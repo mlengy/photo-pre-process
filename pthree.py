@@ -1,11 +1,11 @@
 from typing import Optional
+
 import typer
 
+from commands.exif import Exif
 from commands.process import Process
 from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
-from commands.exif import Exif
-
 
 app = typer.Typer()
 

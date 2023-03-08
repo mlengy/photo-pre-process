@@ -1,11 +1,16 @@
 import os
 
-from util.helpers import Util, Printer
 from util.exiftool import ExifTool
+from util.helpers import Util, Printer
 
 
 class Exif:
-    def __init__(self, directory: str, output_directory: str, extension: str):
+    def __init__(
+            self,
+            directory: str,
+            output_directory: str,
+            extension: str
+    ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.extension = extension

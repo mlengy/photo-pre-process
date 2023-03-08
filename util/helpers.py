@@ -1,7 +1,8 @@
+import json
 import os
 import shutil
-import json
 from typing import TextIO
+
 import typer
 
 from util.constants import Tags

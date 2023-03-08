@@ -1,5 +1,5 @@
-import subprocess
 import os
+import subprocess
 
 
 class ExifTool(object):
@@ -20,7 +20,7 @@ class ExifTool(object):
         self.process.stdin.write("-stay_open\nFalse\n")
         self.process.stdin.flush()
 
-    def execute_with_extension(self, extension, *args):
+    def execute_with_extension(self, extension: str, *args):
         return self.execute("-ext", extension, *args)
 
     def execute(self, *args):

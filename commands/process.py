@@ -1,14 +1,22 @@
-from util.helpers import Util, Printer
+from commands.exif import Exif
 from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
-from commands.exif import Exif
 from util.exiftool import ExifTool
+from util.helpers import Util, Printer
 
 
 class Process:
     meta_destination_name = "meta"
 
-    def __init__(self, initials: str, directory: str, output_directory: str, keep_original: bool, preset: Preset, extension: str):
+    def __init__(
+            self,
+            initials: str,
+            directory: str,
+            output_directory: str,
+            keep_original: bool,
+            preset: Preset,
+            extension: str
+    ):
         self.initials = initials
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
