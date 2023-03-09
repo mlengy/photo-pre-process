@@ -36,7 +36,7 @@ class Exif:
     def do_exif(self, exiftool: ExifTool, num_images: int):
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
-        with Progress() as progress:
+        with Progress(console=Printer.console) as progress:
             progress_task = progress.add_task(
                 Printer.progress_label(
                     "EXIF sidecar",
@@ -50,7 +50,7 @@ class Exif:
                 file_name_extensionless = os.path.splitext(file_name)[0]
                 full_path_to = f"{self.output_directory}/{file_name_extensionless}.mie"
 
-                Printer.waiting(f"Writing MIE binary dump to [{full_path_to}]...")
+                Printer.waiting(f"Writing MIE binary dump to \[{full_path_to}]...")
 
                 exiftool.execute_with_extension(
                     self.extension,
@@ -68,5 +68,5 @@ class Exif:
     @staticmethod
     def start_message():
         Printer.divider()
-        print("💽 Starting EXIF! 💽")
+        Printer.console.print("[bright_magenta]💽 Starting EXIF! 💽")
         Printer.divider()

@@ -46,12 +46,14 @@ class Rename:
         Printer.done_all()
 
     def do_rename(self, exiftool: ExifTool, file_modification_closure, num_images: int):
-        formatted_date_times = self.__get_formatted_date_time(exiftool)
+        with Printer.progress_spinner() as progress:
+            progress.add_task(f"Getting date and time metadata for files...\n")
+            formatted_date_times = self.__get_formatted_date_time(exiftool)
 
         previous_filename = ""
         sequence_number = 0
 
-        with Progress() as progress:
+        with Progress(console=Printer.console) as progress:
             progress_task = progress.add_task(
                 Printer.progress_label(
                     "Rename",
@@ -85,12 +87,12 @@ class Rename:
 
     @staticmethod
     def do_rename_copy(from_path: str, to_path: str):
-        Printer.waiting(f"Copying [{from_path}] to [{to_path}]...")
+        Printer.waiting(f"Copying \[{from_path}] to \[{to_path}]...")
         shutil.copy2(from_path, to_path)
 
     @staticmethod
     def do_rename_move(from_path: str, to_path: str):
-        Printer.waiting(f"Moving [{from_path}] to [{to_path}]...")
+        Printer.waiting(f"Moving \[{from_path}] to \[{to_path}]...")
         shutil.move(from_path, to_path)
 
     def __get_formatted_date_time(self, exiftool: ExifTool):
@@ -109,16 +111,16 @@ class Rename:
     @staticmethod
     def verify_initials(initials: str):
         if not (initials.isalnum() and 1 < len(initials) <= 10):
-            Printer.error_and_abort(f"Initials [{initials}] is not valid!")
+            Printer.error_and_abort(f"Initials \[{initials}] is not valid!")
 
     @staticmethod
     def verify_possible_directory(directory: str):
         if Util.is_directory_valid(directory):
-            Printer.warning(f"It looks like your initials {[directory]} is a directory.")
+            Printer.warning(f"It looks like your initials \[{directory}] is a directory.")
             Printer.prompt_continue(f"Is this correct?")
 
     @staticmethod
     def start_message():
         Printer.divider()
-        print("🖋️  Starting rename! 🖋️")
+        Printer.console.print("[bright_magenta]🖋️  Starting rename! 🖋️")
         Printer.divider()
