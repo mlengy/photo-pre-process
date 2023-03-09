@@ -38,7 +38,9 @@ class Util:
 
     @staticmethod
     def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "./"):
-        valid_file_names = Util._get_valid_file_names(exiftool, extension, directory)
+        with Printer.progress_spinner() as progress:
+            progress.add_task(f"Verifying files with extension [{extension}] exist in directory [{directory}]\n")
+            valid_file_names = Util._get_valid_file_names(exiftool, extension, directory)
         if not valid_file_names:
             Printer.error_and_abort(f"There are no files with extension [{extension}] in directory [{directory}]!")
         else:
@@ -70,11 +72,11 @@ class Printer:
 
     @staticmethod
     def progress_label(label: str, step: int, total: int):
-        return f"[magenta]{label} (step {step} of {total})\n"
+        return f"[magenta]{label} [cyan](step {step} of {total})\n"
 
     @staticmethod
     def progress_spinner():
-        return Progress(SpinnerColumn(), TextColumn("[progress.description]{task.description}"))
+        return Progress(SpinnerColumn(), TextColumn(" [progress.description]{task.description}"))
 
     @staticmethod
     def divider():

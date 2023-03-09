@@ -120,5 +120,5 @@ class Rename:
     @staticmethod
     def start_message():
         Printer.divider()
-        print("🖋️ Starting rename! 🖋️")
+        print("🖋️  Starting rename! 🖋️")
         Printer.divider()

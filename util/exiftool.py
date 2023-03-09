@@ -12,7 +12,9 @@ class ExifTool(object):
         self.process = subprocess.Popen(
             [self.executable, "-stay_open", "True", "-@", "-"],
             universal_newlines=True,
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL
         )
         return self
 
@@ -27,8 +29,11 @@ class ExifTool(object):
         args = args + ("-execute\n",)
         self.process.stdin.write(str.join("\n", args))
         self.process.stdin.flush()
+
         output = ""
         fd = self.process.stdout.fileno()
-        while not output.endswith(self.sentinel):
+
+        while not output.endswith(ExifTool.sentinel):
             output += os.read(fd, 4096).decode('utf-8')
-        return output[:-len(self.sentinel)]
+
+        return output[:-len(ExifTool.sentinel)]
