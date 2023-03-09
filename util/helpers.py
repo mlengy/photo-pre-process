@@ -51,7 +51,7 @@ class Util:
     def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./"):
         with Printer.progress_spinner() as progress:
             progress.add_task(
-                f"Getting files with extension \[{extension}] in directory \[{directory}]......\n"
+                f"Getting files with extension \[{extension}] in directory \[{directory}]...\n"
             )
             file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
         return list(map(lambda file_name: file_name[Tags.FileName], file_names))

@@ -34,6 +34,7 @@ class Exif:
         Printer.done_all()
 
     def do_exif(self, exiftool: ExifTool, num_images: int):
+        Printer.console.print("")
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         with Progress(console=Printer.console) as progress:
