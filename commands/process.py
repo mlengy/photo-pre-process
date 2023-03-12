@@ -70,7 +70,7 @@ class Process:
             rename.do_rename(exiftool, Rename.do_rename_move, num_images)
 
         self.step_count += 1
-        Printer.done(suffix=" rename")
+        Printer.done(prefix="\n", suffix=" rename")
 
     def __texif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_images: int):
         Texif.start_message()
@@ -100,7 +100,7 @@ class Process:
         texif.do_texif_full(exiftool, num_images, meta_full_destination)
 
         self.step_count += 1
-        Printer.done(suffix=" TEXIF")
+        Printer.done(prefix="\n", suffix=" TEXIF")
 
     def __exif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_images: int):
         Exif.start_message()
@@ -120,7 +120,7 @@ class Process:
 
         exif.do_exif(exiftool, num_images)
 
-        Printer.done(suffix=" EXIF")
+        Printer.done(prefix="\n", suffix=" EXIF")
 
     @staticmethod
     def start_message():

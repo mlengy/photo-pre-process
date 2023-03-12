@@ -64,6 +64,9 @@ class Exif:
 
                 progress.update(progress_task, completed=count + 1)
 
+        num_files_in_directory = Util.num_files_in_directory(self.output_directory)
+        Printer.print_files_skipped(num_images - num_files_in_directory)
+
         Printer.done()
 
     @staticmethod

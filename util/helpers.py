@@ -50,6 +50,10 @@ class Util:
             return valid_file_names
 
     @staticmethod
+    def num_files_in_directory(path: str):
+        return len([name for name in os.listdir(path) if os.path.isfile(os.path.join(path, name))])
+
+    @staticmethod
     def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./", task_name: str = None):
         if not Util.__valid_file_names:
             with Printer.progress_spinner() as progress:
@@ -141,6 +145,13 @@ class Printer:
             TextColumn(" [progress.description]{task.description}"),
             console=Printer.console
         )
+
+    @staticmethod
+    def print_files_skipped(num_files_skipped: int):
+        if num_files_skipped == 0:
+            Printer.waiting("All files processed successfully!\n")
+        else:
+            Printer.error(f"Skipped processing for {num_files_skipped} file(s)!\n")
 
     @staticmethod
     def divider():

@@ -124,6 +124,8 @@ class Texif:
                 total=num_images
             )
 
+            num_files_skipped = 0
+
             for count, file_name in enumerate(file_names):
                 file_path = f"{self.directory}/{file_name}"
 
@@ -137,6 +139,7 @@ class Texif:
 
                 if not full_html_dump:
                     Printer.warning(f"Skipping \[{file_path}] as no data was found!")
+                    num_files_skipped += 1
                     continue
 
                 file_name_extensionless = os.path.splitext(file_name)[0]
@@ -150,6 +153,8 @@ class Texif:
                 Printer.done(prefix="    ")
 
                 progress.update(progress_task, completed=count + 1)
+
+        Printer.print_files_skipped(num_files_skipped)
 
         Printer.done()
 
@@ -185,6 +190,8 @@ class Texif:
                 total=num_images
             )
 
+            num_files_skipped = 0
+
             for count, file_name in enumerate(file_names):
                 file_path = f"{self.directory}/{file_name}"
 
@@ -202,6 +209,7 @@ class Texif:
 
                 if not file_tags:
                     Printer.warning(f"Skipping \[{file_path}] due to error!")
+                    num_files_skipped += 1
                     continue
 
                 file_tags = file_tags[0]
@@ -238,6 +246,8 @@ class Texif:
                 Printer.done(prefix="    ")
 
                 progress.update(progress_task, completed=count + 1)
+
+        Printer.print_files_skipped(num_files_skipped)
 
         Printer.done()
 

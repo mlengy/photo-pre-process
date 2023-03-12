@@ -62,6 +62,7 @@ class Rename:
 
             previous_filename = ""
             sequence_number = 0
+            num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
                 file_path = f"{self.directory}/{file_name}"
@@ -81,6 +82,7 @@ class Rename:
 
                 if not file_tags:
                     Printer.warning(f"Skipping \[{file_path}] due to error!")
+                    num_files_skipped += 1
                     continue
 
                 formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
@@ -101,6 +103,8 @@ class Rename:
                 file_modification_closure(full_path_from, full_path_to)
 
                 progress.update(progress_task, completed=count + 1)
+
+        Printer.print_files_skipped(num_files_skipped)
 
         Printer.done()
 
