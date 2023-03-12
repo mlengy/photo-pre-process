@@ -112,6 +112,10 @@ class Texif:
                     file_path
                 )
 
+                if not full_html_dump:
+                    Printer.warning(f"Skipping \[{file_path}] as no data was found!")
+                    continue
+
                 file_name_extensionless = os.path.splitext(file_name)[0]
                 full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
 
@@ -158,14 +162,20 @@ class Texif:
                 Printer.waiting(f"Generating simple TEXIF for \[{file_path}]...")
 
                 Printer.waiting(f"Building tag JSON...", prefix="    ")
-                file_tags = json.loads(
+                file_tags = Util.deserialize_data(
                     exiftool.execute_with_extension(
                         self.extension,
                         f"-{Tags.JSONFormat}",
                         file_path,
                         *required_tags_formatted
                     )
-                )[0]
+                )
+
+                if not file_tags:
+                    Printer.warning(f"Skipping \[{file_path}] due to error!")
+                    continue
+
+                file_tags = file_tags[0]
 
                 for required_tag in required_tags:
                     if required_tag not in file_tags:

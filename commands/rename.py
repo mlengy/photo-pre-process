@@ -68,7 +68,7 @@ class Rename:
 
                 Printer.waiting(f"Generating formatted datetime for \[{file_path}]...")
 
-                file_tags = json.loads(
+                file_tags = Util.deserialize_data(
                     exiftool.execute_with_extension(
                         self.extension,
                         f"-{Tags.JSONFormat}",
@@ -78,6 +78,10 @@ class Rename:
                         file_path
                     )
                 )
+
+                if not file_tags:
+                    Printer.warning(f"Skipping \[{file_path}] due to error!")
+                    continue
 
                 formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
                 new_filename = f"{self.initials.upper()}-{formatted_date_time}-"
@@ -111,19 +115,6 @@ class Rename:
     def do_rename_move(from_path: str, to_path: str):
         Printer.waiting(f"Moving \[{from_path}] to \[{to_path}]...")
         shutil.move(from_path, to_path)
-
-    def __get_formatted_date_time(self, exiftool: ExifTool):
-        return json.loads(
-            exiftool.execute_with_extension(
-                self.extension,
-                f"-{Tags.JSONFormat}",
-                f"-{Tags.FileName}",
-                f"-{Tags.DateTimeOriginal}",
-                "-d",
-                Config.rename_date_format,
-                self.directory
-            )
-        )
 
     @staticmethod
     def verify_initials(initials: str):

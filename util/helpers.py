@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import traceback
 from typing import TextIO
 
 import typer
@@ -55,7 +56,10 @@ class Util:
                 message = f"Getting files with extension \[{extension}] in directory \[{directory}]...\n"\
                     if not task_name else task_name
                 progress.add_task(message)
-                file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
+                file_names = Util.deserialize_data(
+                    Util._get_valid_file_names(exiftool, extension, directory),
+                    soft_error=False
+                )
                 Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
                 Util.__sanitize_valid_file_names()
         return Util.__valid_file_names
@@ -64,6 +68,34 @@ class Util:
     def set_valid_file_names(valid_file_names: list[str]):
         Util.__valid_file_names = valid_file_names
         Util.__sanitize_valid_file_names()
+
+    @staticmethod
+    def write_with_newline(file: TextIO, string: str = ""):
+        file.write(f"{string}\n")
+
+    @staticmethod
+    def deserialize_data(data: str, soft_error: bool = True):
+        try:
+            if not data:
+                error_function = Printer.error if soft_error else Printer.error_and_abort
+                error_function("Could not process data since it was empty!")
+            else:
+                return json.loads(data)
+        except Exception:
+            Printer.error(f"Error while deserializing JSON data!")
+            traceback.print_exc()
+            if not soft_error:
+                raise typer.Abort()
+
+
+    @staticmethod
+    def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
+        return exiftool.execute_with_extension(
+            extension,
+            f"-{Tags.JSONFormat}",
+            f"-{Tags.FileName}",
+            directory
+        )
 
     @staticmethod
     def __sanitize_valid_file_names():
@@ -80,19 +112,6 @@ class Util:
         if file_hidden:
             Printer.warning(f"Skipping hidden file \[{file_name}]!")
         return file_hidden
-
-    @staticmethod
-    def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
-        return exiftool.execute_with_extension(
-            extension,
-            f"-{Tags.JSONFormat}",
-            f"-{Tags.FileName}",
-            directory
-        )
-
-    @staticmethod
-    def write_with_newline(file: TextIO, string: str = ""):
-        file.write(f"{string}\n")
 
 
 class Printer:
