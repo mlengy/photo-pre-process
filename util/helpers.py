@@ -57,7 +57,7 @@ class Util:
     def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./", task_name: str = None):
         if not Util.__valid_file_names:
             with Printer.progress_spinner() as progress:
-                message = f"Getting files with extension \[{extension}] in directory \[{directory}]...\n"\
+                message = f"Getting files with extension \[{extension}] in directory \[{directory}]...\n" \
                     if not task_name else task_name
                 progress.add_task(message)
                 file_names = Util.deserialize_data(
@@ -90,7 +90,6 @@ class Util:
             traceback.print_exc()
             if not soft_error:
                 raise typer.Abort()
-
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):

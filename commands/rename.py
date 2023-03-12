@@ -1,4 +1,3 @@
-import json
 import shutil
 
 from rich.progress import Progress

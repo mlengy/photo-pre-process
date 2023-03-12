@@ -7,4 +7,3 @@ class Tags:
     OffsetTimeOriginal = "OffsetTimeOriginal"
     Make = "Make"
     Model = "Model"
-
