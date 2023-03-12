@@ -57,13 +57,29 @@ class Util:
                 progress.add_task(message)
                 file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
                 Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
-                Util.__valid_file_names.sort()
+                Util.__sanitize_valid_file_names()
         return Util.__valid_file_names
 
     @staticmethod
     def set_valid_file_names(valid_file_names: list[str]):
         Util.__valid_file_names = valid_file_names
-        Util.__valid_file_names.sort()
+        Util.__sanitize_valid_file_names()
+
+    @staticmethod
+    def __sanitize_valid_file_names():
+        Util.__valid_file_names = sorted(
+            filter(
+                lambda file_name: not Util.__is_file_hidden(file_name),
+                Util.__valid_file_names
+            )
+        )
+
+    @staticmethod
+    def __is_file_hidden(file_name: str):
+        file_hidden = file_name.startswith('.')
+        if file_hidden:
+            Printer.warning(f"Skipping hidden file \[{file_name}]!")
+        return file_hidden
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
