@@ -26,18 +26,21 @@ def process(
         ),
         keep_original: bool = typer.Option(
             False,
+            "--keep-original",
             "--keep",
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
         preset: Optional[Preset] = typer.Option(
             Preset.fujifilm_xt5_still,
+            "--preset",
             "-p",
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
+            "--extension",
             "--ext",
             "-e",
             help="The extension of files to process."
@@ -62,12 +65,14 @@ def rename(
         ),
         keep_original: bool = typer.Option(
             False,
+            "--keep-original",
             "--keep",
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
+            "--extension",
             "--ext",
             "-e",
             help="The extension of files to process."
@@ -88,24 +93,28 @@ def texif(
         ),
         type: Optional[TexifType] = typer.Option(
             TexifType.both,
+            "--type",
             "-t",
             case_sensitive=False,
             help="The type of TEXIF to generate."
         ),
         level: Optional[TexifLevel] = typer.Option(
             TexifLevel.high,
+            "--level",
             "-l",
             case_sensitive=False,
             help="The level of generated TEXIF data to use, only applies to simple TEXIFs."
         ),
         preset: Optional[Preset] = typer.Option(
             Preset.fujifilm_xt5_still,
+            "--preset",
             "-p",
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
+            "--extension",
             "--ext",
             "-e",
             help="The extension of files to process."
@@ -126,6 +135,7 @@ def exif(
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
+            "--extension",
             "--ext",
             "-e",
             help="The extension of files to process."
