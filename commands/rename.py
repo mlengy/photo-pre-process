@@ -1,3 +1,4 @@
+import os.path
 import shutil
 
 from rich.progress import Progress
@@ -64,7 +65,7 @@ class Rename:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
-                file_path = f"{self.directory}/{file_name}"
+                file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Generating formatted datetime for \[{file_path}]...")
 
@@ -97,8 +98,8 @@ class Rename:
 
                 new_file_names.append(full_filename)
 
-                full_path_from = f"{self.directory}/{file_name}"
-                full_path_to = f"{self.output_directory}/{full_filename}"
+                full_path_from = os.path.join(self.directory, file_name)
+                full_path_to = os.path.join(self.output_directory, full_filename)
                 file_modification_closure(full_path_from, full_path_to)
 
                 progress.update(progress_task, completed=count + 1)

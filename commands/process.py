@@ -1,3 +1,5 @@
+import os.path
+
 from commands.exif import Exif
 from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
@@ -39,8 +41,8 @@ class Process:
 
             Util.create_directory_or_abort(self.output_directory)
 
-            media_destination = f"{self.output_directory}/{self.extension.lower()}"
-            meta_destination = f"{media_destination}/{Process.meta_destination_name}"
+            media_destination = os.path.join(self.output_directory, self.extension.lower())
+            meta_destination = os.path.join(media_destination, Process.meta_destination_name)
 
             Util.create_directory_or_abort(media_destination)
 
@@ -75,8 +77,8 @@ class Process:
     def __texif(self, exiftool: ExifTool, media_destination: str, meta_destination: str, num_files: int):
         Texif.start_message()
 
-        meta_simple_destination = f"{meta_destination}/simple"
-        meta_full_destination = f"{meta_destination}/full"
+        meta_simple_destination = os.path.join(meta_destination, "simple")
+        meta_full_destination = os.path.join(meta_destination, "full")
 
         Util.create_directory_or_abort(meta_simple_destination)
         Util.create_directory_or_abort(meta_full_destination)
@@ -105,7 +107,7 @@ class Process:
     def __exif(self, exiftool: ExifTool, media_destination: str, meta_destination: str, num_files: int):
         Exif.start_message()
 
-        meta_mie_destination = f"{meta_destination}/mie"
+        meta_mie_destination = os.path.join(meta_destination, "mie")
 
         Util.create_directory_or_abort(meta_mie_destination)
 

@@ -49,7 +49,8 @@ class Exif:
 
             for count, file_name in enumerate(file_names):
                 file_name_extensionless = os.path.splitext(file_name)[0]
-                full_path_to = f"{self.output_directory}/{file_name_extensionless}.mie"
+                full_path_from = os.path.join(self.directory, file_name)
+                full_path_to = f"{os.path.join(self.output_directory, file_name_extensionless)}.mie"
 
                 Printer.waiting(f"Writing MIE binary dump to \[{full_path_to}]...")
 
@@ -59,7 +60,7 @@ class Exif:
                     full_path_to,
                     "-all:all",
                     "-icc_profile",
-                    f"{self.directory}/{file_name}"
+                    full_path_from
                 )
 
                 progress.update(progress_task, completed=count + 1)

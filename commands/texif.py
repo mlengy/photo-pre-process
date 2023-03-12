@@ -127,7 +127,7 @@ class Texif:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
-                file_path = f"{self.directory}/{file_name}"
+                file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Generating full HTML dump for \[{file_path}]...")
 
@@ -143,7 +143,7 @@ class Texif:
                     continue
 
                 file_name_extensionless = os.path.splitext(file_name)[0]
-                full_path_to = f"{output_directory_override}/{file_name_extensionless}.html"
+                full_path_to = f"{os.path.join(output_directory_override, file_name_extensionless)}.html"
 
                 Printer.waiting(f"Writing full HTML dump to \[{full_path_to}]...", prefix="    ")
 
@@ -193,7 +193,7 @@ class Texif:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
-                file_path = f"{self.directory}/{file_name}"
+                file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Generating simple TEXIF for \[{file_path}]...")
 
@@ -219,7 +219,7 @@ class Texif:
                         Printer.warning(f"Warning: could not find tag \[{required_tag}]!", prefix="    ")
 
                 file_name_extensionless = os.path.splitext(file_name)[0]
-                full_path_to = f"{output_directory_override}/{file_name_extensionless}.txt"
+                full_path_to = f"{os.path.join(output_directory_override, file_name_extensionless)}.txt"
 
                 Printer.waiting(f"Writing TEXIF to \[{full_path_to}]...", prefix="    ")
 
@@ -252,7 +252,7 @@ class Texif:
         Printer.done()
 
     def __automatically_select_preset(self, exiftool: ExifTool, file_names: list[str]):
-        file_path = f"{self.directory}/{file_names[0]}"
+        file_path = os.path.join(self.directory, file_names[0])
 
         file_tags = Util.deserialize_data(
             exiftool.execute_with_extension(
@@ -312,7 +312,7 @@ class Texif:
     def __compile_preset(self, preset_directory: str):
         try:
             Printer.waiting(f"Compiling preset \[{self.preset}]...")
-            with open(f"{preset_directory}/{self.preset}.json") as preset_file:
+            with open(f"{os.path.join(preset_directory, self.preset)}.json") as preset_file:
                 preset_json = json.load(preset_file)
                 required_tags = set()
 
