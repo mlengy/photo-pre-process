@@ -67,7 +67,7 @@ class Texif:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 
@@ -102,11 +102,14 @@ class Texif:
             )
 
             for count, file_name in enumerate(file_names):
-                Printer.waiting(f"Generating full HTML dump for \[{file_name}]...")
+                file_path = f"{self.directory}/{file_name}"
+
+                Printer.waiting(f"Generating full HTML dump for \[{file_path}]...")
+
                 full_html_dump = exiftool.execute_with_extension(
                     self.extension,
                     f"-{Tags.HTMLDump}",
-                    f"{self.directory}/{file_name}"
+                    file_path
                 )
 
                 file_name_extensionless = os.path.splitext(file_name)[0]
@@ -150,14 +153,16 @@ class Texif:
             )
 
             for count, file_name in enumerate(file_names):
-                Printer.waiting(f"Generating simple TEXIF for \[{file_name}]...")
+                file_path = f"{self.directory}/{file_name}"
+
+                Printer.waiting(f"Generating simple TEXIF for \[{file_path}]...")
 
                 Printer.waiting(f"Building tag JSON...", prefix="    ")
                 file_tags = json.loads(
                     exiftool.execute_with_extension(
                         self.extension,
                         f"-{Tags.JSONFormat}",
-                        f"{self.directory}/{file_name}",
+                        file_path,
                         *required_tags_formatted
                     )
                 )[0]

@@ -35,7 +35,7 @@ class Process:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 

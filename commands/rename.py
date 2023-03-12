@@ -34,7 +34,7 @@ class Rename:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = Util.verify_extension_exists(exiftool, self.extension, self.directory)
+            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 
@@ -46,6 +46,8 @@ class Rename:
         Printer.done_all()
 
     def do_rename(self, exiftool: ExifTool, file_modification_closure, num_images: int):
+        new_file_names = []
+
         with Printer.progress_spinner() as progress:
             progress.add_task(f"Getting date and time metadata for files...\n")
             formatted_date_times = self.__get_formatted_date_time(exiftool)
@@ -77,6 +79,8 @@ class Rename:
 
                 full_filename = new_filename + f"{sequence_number:02d}-{original_filename}"
 
+                new_file_names.append(full_filename)
+
                 full_path_from = f"{self.directory}/{original_filename}"
                 full_path_to = f"{self.output_directory}/{full_filename}"
                 file_modification_closure(full_path_from, full_path_to)
@@ -84,6 +88,8 @@ class Rename:
                 progress.update(progress_task, completed=count + 1)
 
         Printer.done()
+
+        Util.set_valid_file_names(new_file_names)
 
     @staticmethod
     def do_rename_copy(from_path: str, to_path: str):

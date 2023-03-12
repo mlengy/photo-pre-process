@@ -12,6 +12,8 @@ from util.exiftool import ExifTool
 
 
 class Util:
+    __valid_file_names: list[str] = []
+
     @staticmethod
     def strip_slashes(directory: str):
         return directory.strip("/")
@@ -38,23 +40,28 @@ class Util:
             Util.create_directory_or_abort(directory)
 
     @staticmethod
-    def verify_extension_exists(exiftool: ExifTool, extension: str, directory: str = "./"):
-        with Printer.progress_spinner() as progress:
-            progress.add_task(f"Verifying files with extension \[{extension}] exist in directory \[{directory}]...\n")
-            valid_file_names = Util._get_valid_file_names(exiftool, extension, directory)
+    def verify_extensions_in_directory(exiftool: ExifTool, extension: str, directory: str = "./"):
+        task_name = f"Verifying files with extension \[{extension}] in directory \[{directory}]...\n"
+        valid_file_names = Util.get_valid_file_names(exiftool, extension, directory, task_name)
         if not valid_file_names:
             Printer.error_and_abort(f"There are no files with extension \[{extension}] in directory \[{directory}]!")
         else:
-            return len(json.loads(valid_file_names))
+            return valid_file_names
 
     @staticmethod
-    def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./"):
-        with Printer.progress_spinner() as progress:
-            progress.add_task(
-                f"Getting files with extension \[{extension}] in directory \[{directory}]...\n"
-            )
-            file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
-        return list(map(lambda file_name: file_name[Tags.FileName], file_names))
+    def get_valid_file_names(exiftool: ExifTool, extension: str, directory: str = "./", task_name: str = None):
+        if not Util.__valid_file_names:
+            with Printer.progress_spinner() as progress:
+                message = f"Getting files with extension \[{extension}] in directory \[{directory}]...\n"\
+                    if not task_name else task_name
+                progress.add_task(message)
+                file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
+                Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
+        return Util.__valid_file_names
+
+    @staticmethod
+    def set_valid_file_names(valid_file_names: list[str]):
+        Util.__valid_file_names = valid_file_names
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
