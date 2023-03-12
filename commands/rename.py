@@ -48,12 +48,7 @@ class Rename:
     def do_rename(self, exiftool: ExifTool, file_modification_closure, num_images: int):
         new_file_names = []
 
-        with Printer.progress_spinner() as progress:
-            progress.add_task(f"Getting date and time metadata for files...\n")
-            formatted_date_times = self.__get_formatted_date_time(exiftool)
-
-        previous_filename = ""
-        sequence_number = 0
+        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         with Progress(console=Printer.console) as progress:
             progress_task = progress.add_task(
@@ -65,10 +60,26 @@ class Rename:
                 total=num_images
             )
 
-            for count, image_metadata in enumerate(formatted_date_times):
-                original_filename = image_metadata[Tags.FileName]
-                formatted_date_time = image_metadata[Tags.DateTimeOriginal]
+            previous_filename = ""
+            sequence_number = 0
 
+            for count, file_name in enumerate(file_names):
+                file_path = f"{self.directory}/{file_name}"
+
+                Printer.waiting(f"Generating formatted datetime for \[{file_path}]...")
+
+                file_tags = json.loads(
+                    exiftool.execute_with_extension(
+                        self.extension,
+                        f"-{Tags.JSONFormat}",
+                        f"-{Tags.DateTimeOriginal}",
+                        "-d",
+                        Config.rename_date_format,
+                        file_path
+                    )
+                )
+
+                formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
                 new_filename = f"{self.initials.upper()}-{formatted_date_time}-"
 
                 if new_filename == previous_filename:
@@ -77,11 +88,11 @@ class Rename:
                     previous_filename = new_filename
                     sequence_number = 0
 
-                full_filename = new_filename + f"{sequence_number:02d}-{original_filename}"
+                full_filename = new_filename + f"{sequence_number:02d}-{file_name}"
 
                 new_file_names.append(full_filename)
 
-                full_path_from = f"{self.directory}/{original_filename}"
+                full_path_from = f"{self.directory}/{file_name}"
                 full_path_to = f"{self.output_directory}/{full_filename}"
                 file_modification_closure(full_path_from, full_path_to)
 

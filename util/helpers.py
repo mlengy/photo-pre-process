@@ -57,11 +57,13 @@ class Util:
                 progress.add_task(message)
                 file_names = json.loads(Util._get_valid_file_names(exiftool, extension, directory))
                 Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
+                Util.__valid_file_names.sort()
         return Util.__valid_file_names
 
     @staticmethod
     def set_valid_file_names(valid_file_names: list[str]):
         Util.__valid_file_names = valid_file_names
+        Util.__valid_file_names.sort()
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
