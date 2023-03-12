@@ -22,7 +22,6 @@
     "ResolutionUnit",
     "ImageWidth",
     "ImageHeight",
-    "PixelFormat",
     "PictureMode",
     "FilmMode",
     "GrainEffectRoughness",
@@ -173,12 +172,6 @@
       {
         "tag": "ImageHeight",
         "name": "ImageHeight"
-      }
-    ],
-    [
-      {
-        "tag": "PixelFormat",
-        "name": "PixelFormat"
       }
     ],
     [

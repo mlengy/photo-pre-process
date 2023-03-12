@@ -3,3 +3,4 @@ class Tags:
     HTMLDump = "HTMLDump"
     FileName = "FileName"
     DateTimeOriginal = "DateTimeOriginal"
+    OffsetTimeOriginal = "OffsetTimeOriginal"

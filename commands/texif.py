@@ -1,6 +1,8 @@
 import json
 import os
 import traceback
+from datetime import datetime
+from zoneinfo import ZoneInfo
 from enum import Enum
 from typing import TextIO
 
@@ -13,7 +15,7 @@ from util.helpers import Util, Printer
 
 
 class Preset(str, Enum):
-    fujifilmxt5 = "fujifilmxt5"
+    fujifilm_xt5_still = "fujifilm_xt5_still"
 
 
 class TexifType(str, Enum):
@@ -141,8 +143,11 @@ class Texif:
             Printer.error_and_abort(f"Cannot find preset \[{self.preset}]!")
 
         required_tags = self.__compile_preset(preset_directory)
-        required_tags_formatted = [f"-{tag}" for tag in required_tags]
-        required_tags_formatted.append(f"-{Tags.FileName}")
+        required_tags_formatted = {f"-{tag}" for tag in required_tags}
+        required_tags_formatted.add(f"-{Tags.FileName}")
+        required_tags_formatted.add(f"-{Tags.DateTimeOriginal}")
+        required_tags_formatted.add(f"-{Tags.OffsetTimeOriginal}")
+        required_tags_formatted = list(required_tags_formatted)
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
@@ -187,8 +192,18 @@ class Texif:
                 Printer.waiting(f"Writing TEXIF to \[{full_path_to}]...", prefix="    ")
 
                 with open(full_path_to, "w") as texif_file:
-                    Util.write_with_newline(texif_file, file_tags[Tags.FileName])
-                    Util.write_with_newline(texif_file, file_tags[Tags.DateTimeOriginal])
+                    Util.write_with_newline(texif_file, f"Media filename: {file_tags[Tags.FileName]}")
+                    Util.write_with_newline(
+                        texif_file,
+                        f"Media created: {file_tags[Tags.DateTimeOriginal]}{file_tags[Tags.OffsetTimeOriginal]}"
+                    )
+
+                    generation_datetime = datetime.now().astimezone()
+                    generation_offset = generation_datetime.strftime("%z")
+                    generation_offset_formatted = f"{generation_offset[:3]}:{generation_offset[3:]}"
+                    generation_datetime_formatted =\
+                        generation_datetime.strftime("%Y:%m:%d %H:%M:%S") + generation_offset_formatted
+                    Util.write_with_newline(texif_file, f"TEXIF created: {generation_datetime_formatted}")
                     Util.write_with_newline(texif_file)
 
                     for level in range(1, Texif.json_level_highest + 1):
