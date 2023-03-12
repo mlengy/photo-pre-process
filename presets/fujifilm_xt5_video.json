@@ -6,43 +6,31 @@
     "Copyright",
     "Make",
     "Model",
-    "SerialNumber",
-    "LensMake",
-    "LensModel",
     "LensInfo",
-    "LensSerialNumber",
-    "FocalLength",
-    "FocalLengthIn35mmFormat",
-    "ApertureValue",
+    "FNumber",
     "ShutterSpeed",
     "ShutterSpeedValue",
     "ISO",
     "XResolution",
     "YResolution",
-    "ResolutionUnit",
     "ImageWidth",
     "ImageHeight",
-    "Orientation",
+    "Rotation",
+    "Duration",
+    "FrameRate",
+    "VideoFrameRate",
     "PictureMode",
     "FilmMode",
     "GrainEffectRoughness",
-    "GrainEffectSize",
-    "ColorChromeEffect",
-    "ColorChromeFXBlue",
     "WhiteBalance",
-    "WhiteBalanceFineTune",
     "DynamicRangeSetting",
     "HighlightTone",
     "ShadowTone",
     "Saturation",
     "Sharpness",
     "NoiseReduction",
-    "Clarity",
-    "ShutterType",
     "MeteringMode",
-    "AFMode",
-    "FocusMode",
-    "ExposureCount"
+    "FocusMode"
   ],
   "3": [
     [
@@ -83,50 +71,14 @@
     ],
     [
       {
-        "tag": "SerialNumber",
-        "name": "SerialNumber"
-      }
-    ],
-    [
-      {
-        "tag": "LensMake",
-        "name": "LensMake"
-      }
-    ],
-    [
-      {
-        "tag": "LensModel",
-        "name": "LensModel"
-      }
-    ],
-    [
-      {
         "tag": "LensInfo",
         "name": "LensInfo"
       }
     ],
     [
       {
-        "tag": "LensSerialNumber",
-        "name": "LensSerialNumber"
-      }
-    ],
-    [
-      {
-        "tag": "FocalLength",
-        "name": "FocalLength"
-      }
-    ],
-    [
-      {
-        "tag": "FocalLengthIn35mmFormat",
-        "name": "FocalLengthIn35mmFormat"
-      }
-    ],
-    [
-      {
-        "tag": "ApertureValue",
-        "name": "ApertureValue"
+        "tag": "FNumber",
+        "name": "FNumber"
       }
     ],
     [
@@ -161,12 +113,6 @@
     ],
     [
       {
-        "tag": "ResolutionUnit",
-        "name": "ResolutionUnit"
-      }
-    ],
-    [
-      {
         "tag": "ImageWidth",
         "name": "ImageWidth"
       }
@@ -179,8 +125,26 @@
     ],
     [
       {
-        "tag": "Orientation",
-        "name": "Orientation"
+        "tag": "Rotation",
+        "name": "Rotation"
+      }
+    ],
+    [
+      {
+        "tag": "Duration",
+        "name": "Duration"
+      }
+    ],
+    [
+      {
+        "tag": "FrameRate",
+        "name": "FrameRate"
+      }
+    ],
+    [
+      {
+        "tag": "VideoFrameRate",
+        "name": "VideoFrameRate"
       }
     ],
     [
@@ -203,32 +167,8 @@
     ],
     [
       {
-        "tag": "GrainEffectSize",
-        "name": "GrainEffectSize"
-      }
-    ],
-    [
-      {
-        "tag": "ColorChromeEffect",
-        "name": "ColorChromeEffect"
-      }
-    ],
-    [
-      {
-        "tag": "ColorChromeFXBlue",
-        "name": "ColorChromeFXBlue"
-      }
-    ],
-    [
-      {
         "tag": "WhiteBalance",
         "name": "WhiteBalance"
-      }
-    ],
-    [
-      {
-        "tag": "WhiteBalanceFineTune",
-        "name": "WhiteBalanceFineTune"
       }
     ],
     [
@@ -269,18 +209,6 @@
     ],
     [
       {
-        "tag": "Clarity",
-        "name": "Clarity"
-      }
-    ],
-    [
-      {
-        "tag": "ShutterType",
-        "name": "ShutterType"
-      }
-    ],
-    [
-      {
         "tag": "MeteringMode",
         "name": "MeteringMode"
       }
@@ -289,18 +217,6 @@
       {
         "tag": "FocusMode",
         "name": "FocusMode"
-      }
-    ],
-    [
-      {
-        "tag": "AFMode",
-        "name": "AFMode"
-      }
-    ],
-    [
-      {
-        "tag": "ExposureCount",
-        "name": "ExposureCount"
       }
     ]
   ],
@@ -332,8 +248,22 @@
         "tag": "ImageHeight"
       },
       {
-        "tag": "Orientation",
-        "prefix": ", "
+        "tag": "Rotation",
+        "prefix": ", Rotation "
+      }
+    ],
+    [
+      {
+        "tag": "Duration",
+        "delimiter": " | "
+      },
+      {
+        "tag": "FrameRate",
+        "suffix": "fps"
+      },
+      {
+        "tag": "VideoFrameRate",
+        "suffix": "fps"
       }
     ],
     [
@@ -347,25 +277,12 @@
     ],
     [
       {
-        "tag": "LensMake",
-        "delimiter": " "
-      },
-      {
-        "tag": "LensModel"
+        "tag": "LensInfo"
       }
     ],
     [
       {
-        "tag": "FocalLength",
-        "delimiter": "/"
-      },
-      {
-        "tag": "FocalLengthIn35mmFormat"
-      }
-    ],
-    [
-      {
-        "tag": "ApertureValue",
+        "tag": "FNumber",
         "prefix": "f/",
         "delimiter": " | "
       },
@@ -383,20 +300,12 @@
         "delimiter": " | "
       },
       {
-        "tag": "ShutterType",
-        "prefix": "Shutter "
-      },
-      {
         "tag": "MeteringMode",
         "prefix": "Metering "
       },
       {
         "tag": "FocusMode",
         "prefix": "Focus "
-      },
-      {
-        "tag": "AFMode",
-        "prefix": "AF "
       }
     ],
     [
@@ -407,29 +316,13 @@
       {
         "tag": "GrainEffectRoughness",
         "prefix": "Grain Roughness "
-      },
-      {
-        "tag": "GrainEffectSize",
-        "prefix": "Grain Size "
-      },
-      {
-        "tag": "ColorChromeEffect",
-        "prefix": "Chrome "
-      },
-      {
-        "tag": "ColorChromeFXBlue",
-        "prefix": "Chrome Blue "
       }
     ],
     [
       {
         "tag": "WhiteBalance",
         "prefix": "White Balance ",
-        "suffix": ", "
-      },
-      {
-        "tag": "WhiteBalanceFineTune",
-        "suffix": " | "
+        "delimiter": " | "
       },
       {
         "tag": "DynamicRangeSetting",
@@ -457,10 +350,6 @@
       {
         "tag": "NoiseReduction",
         "prefix": "NR "
-      },
-      {
-        "tag": "Clarity",
-        "prefix": "Clarity "
       }
     ]
   ],
@@ -481,20 +370,11 @@
     ],
     [
       {
-        "tag": "LensMake",
-        "delimiter": " "
-      },
-      {
-        "tag": "LensModel"
-      }
-    ],
-    [
-      {
-        "tag": "FocalLength",
+        "tag": "LensInfo",
         "delimiter": " | "
       },
       {
-        "tag": "ApertureValue",
+        "tag": "FNumber",
         "prefix": "f/"
       },
       {

@@ -15,6 +15,7 @@ from util.helpers import Util, Printer
 
 class Preset(str, Enum):
     fujifilm_xt5_still = "fujifilm_xt5_still"
+    fujifilm_xt5_video = "fujifilm_xt5_video"
 
 
 class TexifType(str, Enum):
