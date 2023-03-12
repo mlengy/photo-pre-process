@@ -9,7 +9,7 @@ I created this utility to suit my own personal digital photography workflow. It 
 
 This script requires Python 3.9.
 
-This script depends on both [`exiftool`](https://exiftool.org/) and [`typer`](https://typer.tiangolo.com/).
+This script depends on [`exiftool`](https://exiftool.org/), [`typer`](https://typer.tiangolo.com/), and [`rich`](https://github.com/Textualize/rich).
 
 `exiftool` must be installed manually prior to using this script. Please follow the instructions [here](https://exiftool.org/install.html).
 

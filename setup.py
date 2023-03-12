@@ -7,7 +7,10 @@ setup(
     author="Michael Leng",
     author_email="michael@len.gy",
     url="https://len.gy",
-    install_requires=["typer[all]"],
+    install_requires=[
+        "typer[all]",
+        "rich"
+    ],
     license="MIT",
     entry_points={
         "console_scripts": [
