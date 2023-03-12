@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="photo-pre-process",
-    description="Scripts to pre-process digital images for storage and editing.",
+    description="Scripts to pre-process digital media for storage and editing.",
     version="0.2.0",
     author="Michael Leng",
     author_email="michael@len.gy",

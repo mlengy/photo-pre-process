@@ -39,24 +39,24 @@ class Process:
 
             Util.create_directory_or_abort(self.output_directory)
 
-            image_destination = f"{self.output_directory}/{self.extension.lower()}"
-            meta_destination = f"{image_destination}/{Process.meta_destination_name}"
+            media_destination = f"{self.output_directory}/{self.extension.lower()}"
+            meta_destination = f"{media_destination}/{Process.meta_destination_name}"
 
-            Util.create_directory_or_abort(image_destination)
+            Util.create_directory_or_abort(media_destination)
 
-            self.__rename(exiftool, image_destination, num_files)
-            self.__texif(exiftool, image_destination, meta_destination, num_files)
-            self.__exif(exiftool, image_destination, meta_destination, num_files)
+            self.__rename(exiftool, media_destination, num_files)
+            self.__texif(exiftool, media_destination, meta_destination, num_files)
+            self.__exif(exiftool, media_destination, meta_destination, num_files)
 
         Printer.done_all()
 
-    def __rename(self, exiftool: ExifTool, image_destination: str, num_files: int):
+    def __rename(self, exiftool: ExifTool, media_destination: str, num_files: int):
         Rename.start_message()
 
         rename = Rename(
             initials=self.initials,
             directory=self.directory,
-            output_directory=image_destination,
+            output_directory=media_destination,
             keep_original=self.keep_original,
             extension=self.extension
         )
@@ -72,7 +72,7 @@ class Process:
         self.step_count += 1
         Printer.done(prefix="\n", suffix=" rename")
 
-    def __texif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_files: int):
+    def __texif(self, exiftool: ExifTool, media_destination: str, meta_destination: str, num_files: int):
         Texif.start_message()
 
         meta_simple_destination = f"{meta_destination}/simple"
@@ -82,7 +82,7 @@ class Process:
         Util.create_directory_or_abort(meta_full_destination)
 
         texif = Texif(
-            directory=image_destination,
+            directory=media_destination,
             output_directory=meta_destination,
             type=TexifType.full,
             level=TexifLevel.high,
@@ -102,7 +102,7 @@ class Process:
         self.step_count += 1
         Printer.done(prefix="\n", suffix=" TEXIF")
 
-    def __exif(self, exiftool: ExifTool, image_destination: str, meta_destination: str, num_files: int):
+    def __exif(self, exiftool: ExifTool, media_destination: str, meta_destination: str, num_files: int):
         Exif.start_message()
 
         meta_mie_destination = f"{meta_destination}/mie"
@@ -110,7 +110,7 @@ class Process:
         Util.create_directory_or_abort(meta_mie_destination)
 
         exif = Exif(
-            directory=image_destination,
+            directory=media_destination,
             output_directory=meta_mie_destination,
             extension=self.extension
         )
