@@ -139,5 +139,5 @@ class Rename:
     @staticmethod
     def start_message():
         Printer.divider()
-        Printer.console.print("[bright_magenta]🖋️  Starting rename! 🖋️")
+        Printer.console.print(f"{Printer.color_divider}🖋️  Starting rename! 🖋️")
         Printer.divider()

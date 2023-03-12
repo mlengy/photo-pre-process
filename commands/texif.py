@@ -86,7 +86,7 @@ class Texif:
         Printer.done_all()
 
     def do_texif_full(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
-        Printer.console.print("\n[magenta]🌐 Starting TEXIF full (HTML)! 🌐\n")
+        Printer.console.print(f"\n{Printer.color_title}🌐 Starting TEXIF full (HTML)! 🌐\n")
 
         output_directory_override = self.output_directory if not output_directory else output_directory
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
@@ -127,7 +127,7 @@ class Texif:
         Printer.done()
 
     def do_texif_simple(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
-        Printer.console.print("\n[magenta]📋 Starting TEXIF simple (TXT)! 📋\n")
+        Printer.console.print(f"\n{Printer.color_title}📋 Starting TEXIF simple (TXT)! 📋\n")
 
         output_directory_override = self.output_directory if not output_directory else output_directory
         preset_directory = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'presets'))
@@ -215,7 +215,7 @@ class Texif:
                     required_tags |= self.__compile_preset_level(level, preset_json[str(level)])
 
                 Printer.waiting("Requiring the following tags:")
-                Printer.console.print(f"[bright_black]{required_tags}\n")
+                Printer.console.print(f"{Printer.color_waiting}{required_tags}\n")
                 return required_tags
         except Exception:
             Printer.error(f"Error while compiling preset \[{self.preset}]!")
@@ -259,5 +259,5 @@ class Texif:
     @staticmethod
     def start_message():
         Printer.divider()
-        Printer.console.print("[bright_magenta]📃 Starting TEXIF! 📃")
+        Printer.console.print(f"{Printer.color_divider}📃 Starting TEXIF! 📃")
         Printer.divider()

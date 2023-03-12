@@ -125,5 +125,5 @@ class Process:
     @staticmethod
     def start_message():
         Printer.divider()
-        Printer.console.print("[bright_magenta]🔄 Starting process! 🔄")
+        Printer.console.print(f"{Printer.color_divider}🔄 Starting process! 🔄")
         Printer.divider()

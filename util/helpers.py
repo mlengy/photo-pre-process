@@ -20,7 +20,7 @@ class Util:
 
     @staticmethod
     def verify_directory(directory: str):
-        Printer.console.print(f"[bright_black]📁 Using \[{directory}] as working directory...")
+        Printer.console.print(f"{Printer.color_waiting}📁 Using \[{directory}] as working directory...")
         if not Util.is_directory_valid(directory):
             Printer.error_and_abort(f"Directory \[{directory}] does not exist!")
 
@@ -82,13 +82,22 @@ class Util:
 class Printer:
     console = Console()
 
+    color_title = "[magenta]"
+    color_subtitle = "[cyan]"
+    color_divider = "[bright_magenta]"
+    color_done_all = "[bright_green]"
+    color_done = "[green]"
+    color_waiting = "[bright_black]"
+    color_warning = "[bright_yellow]"
+    color_error = "[bright_red]"
+
     @staticmethod
     def prompt_continue(text: str):
         typer.confirm(f"⁉️  {text}", abort=True)
 
     @staticmethod
     def progress_label(label: str, step: int, total: int):
-        return f"[magenta]{label} [cyan](step {step} of {total})\n"
+        return f"{Printer.color_title}{label} {Printer.color_subtitle}(step {step} of {total})\n"
 
     @staticmethod
     def progress_spinner():
@@ -100,31 +109,33 @@ class Printer:
 
     @staticmethod
     def divider():
-        Printer.console.print(f"\n[bright_magenta]================================================================\n")
+        Printer.console.print(
+            f"\n{Printer.color_divider}================================================================\n"
+        )
 
     @staticmethod
     def done_all(prefix: str = ""):
         Printer.divider()
-        Printer.console.print(f"[bright_green]{prefix}🎉🎊🥳 Done! 🥳🎊🎉")
+        Printer.console.print(f"{Printer.color_done_all}{prefix}🎉🎊🥳 Done! 🥳🎊🎉")
         Printer.divider()
 
     @staticmethod
     def done(prefix: str = "", suffix: str = ""):
-        Printer.console.print(f"[green]{prefix}👍 Done{suffix}!")
+        Printer.console.print(f"{Printer.color_done}{prefix}👍 Done{suffix}!")
 
     @staticmethod
     def waiting(string: str, prefix: str = ""):
-        Printer.console.print(f"[bright_black]{prefix}⏳ {string}")
+        Printer.console.print(f"{Printer.color_waiting}{prefix}⏳ {string}")
 
     @staticmethod
     def warning(string: str, prefix: str = ""):
-        Printer.console.print(f"[bright_yellow]{prefix}❗ {string}")
+        Printer.console.print(f"{Printer.color_warning}{prefix}❗ {string}")
 
     @staticmethod
     def error_and_abort(string: str, prefix: str = ""):
-        Printer.console.print(f"[bright_red]{prefix}‼️  {string}")
+        Printer.error(string, prefix)
         raise typer.Abort()
 
     @staticmethod
     def error(string: str, prefix: str = ""):
-        Printer.console.print(f"[bright_red]{prefix}‼️  {string}")
+        Printer.console.print(f"{Printer.color_error}{prefix}‼️  {string}")

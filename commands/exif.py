@@ -69,5 +69,5 @@ class Exif:
     @staticmethod
     def start_message():
         Printer.divider()
-        Printer.console.print("[bright_magenta]💽 Starting EXIF! 💽")
+        Printer.console.print(f"{Printer.color_divider}💽 Starting EXIF! 💽")
         Printer.divider()
