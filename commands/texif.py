@@ -14,8 +14,14 @@ from util.helpers import Util, Printer
 
 
 class Preset(str, Enum):
+    auto = "auto"
     fujifilm_xt5_still = "fujifilm_xt5_still"
     fujifilm_xt5_video = "fujifilm_xt5_video"
+
+
+class FileType(str, Enum):
+    still = "still"
+    video = "video"
 
 
 class TexifType(str, Enum):
@@ -43,6 +49,20 @@ class Texif:
 
     file_break_begin_level = "================ BEGIN LEVEL {} ================"
     file_break_end_level = "================= END LEVEL {} ================="
+
+    preset_make_map = {
+        "FUJIFILM": "fujifilm"
+    }
+
+    preset_model_map = {
+        "X-T5": "xt5"
+    }
+
+    preset_file_type_map = {
+        "JPEG": FileType.still.value,
+        "RAF": FileType.still.value,
+        "MOV": FileType.video.value
+    }
 
     def __init__(
             self,
@@ -90,8 +110,9 @@ class Texif:
     def do_texif_full(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}🌐 Starting TEXIF full (HTML)! 🌐\n")
 
-        output_directory_override = self.output_directory if not output_directory else output_directory
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+        output_directory_override = self.output_directory if not output_directory else output_directory
 
         with Progress(console=Printer.console) as progress:
             progress_task = progress.add_task(
@@ -135,9 +156,14 @@ class Texif:
     def do_texif_simple(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}📋 Starting TEXIF simple (TXT)! 📋\n")
 
+        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
         output_directory_override = self.output_directory if not output_directory else output_directory
         preset_directory = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'presets'))
         presets = {os.path.splitext(preset_path)[0] for preset_path in os.listdir(preset_directory)}
+
+        if self.preset == Preset.auto.value:
+            self.__automatically_select_preset(exiftool, file_names)
 
         if self.preset not in presets:
             Printer.error_and_abort(f"Cannot find preset \[{self.preset}]!")
@@ -148,8 +174,6 @@ class Texif:
         required_tags_formatted.add(f"-{Tags.DateTimeOriginal}")
         required_tags_formatted.add(f"-{Tags.OffsetTimeOriginal}")
         required_tags_formatted = list(required_tags_formatted)
-
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
         with Progress(console=Printer.console) as progress:
             progress_task = progress.add_task(
@@ -204,6 +228,7 @@ class Texif:
                     generation_datetime_formatted = \
                         generation_datetime.strftime("%Y:%m:%d %H:%M:%S") + generation_offset_formatted
                     Util.write_with_newline(texif_file, f"TEXIF created: {generation_datetime_formatted}")
+                    Util.write_with_newline(texif_file, f"TEXIF preset: {self.preset}")
                     Util.write_with_newline(texif_file)
 
                     for level in range(1, Texif.json_level_highest + 1):
@@ -215,6 +240,51 @@ class Texif:
                 progress.update(progress_task, completed=count + 1)
 
         Printer.done()
+
+    def __automatically_select_preset(self, exiftool: ExifTool, file_names: list[str]):
+        file_path = f"{self.directory}/{file_names[0]}"
+
+        file_tags = Util.deserialize_data(
+            exiftool.execute_with_extension(
+                self.extension,
+                f"-{Tags.JSONFormat}",
+                f"-{Tags.Make}",
+                f"-{Tags.Model}",
+                f"-{Tags.FileType}",
+                file_path
+            ),
+            soft_error=False
+        )
+
+        if not file_tags:
+            Printer.error_and_abort("Failed to automatically select preset to use!")
+
+        file_tags = file_tags[0]
+
+        decoded_chunks = [Texif.__decode_preset_chunk(Texif.preset_make_map, file_tags.get(Tags.Make)),
+                          Texif.__decode_preset_chunk(Texif.preset_model_map, file_tags.get(Tags.Model)),
+                          Texif.__decode_preset_chunk(Texif.preset_file_type_map, file_tags.get(Tags.FileType))]
+        generated_preset = "_".join(decoded_chunks)
+
+        Printer.prompt_continue(f"Use automatically selected preset [{generated_preset}]?")
+
+        self.preset = generated_preset
+
+    @staticmethod
+    def __decode_preset_chunk(chunk_map: dict[str, str], decode_from: str):
+        if not decode_from:
+            Texif.__decode_preset_chunk_error(decode_from)
+
+        decode_result = chunk_map.get(decode_from)
+
+        if not decode_result:
+            Texif.__decode_preset_chunk_error(decode_from)
+
+        return decode_result
+
+    @staticmethod
+    def __decode_preset_chunk_error(decode_from: str):
+        Printer.error_and_abort(f"Failed to decode preset chunk \[{decode_from}]!")
 
     def __process_level(self, level: int, file_tags: dict, texif_file: TextIO):
         compiled_preset = self.compiled_presets[level - 1]

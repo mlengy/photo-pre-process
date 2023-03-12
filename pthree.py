@@ -32,7 +32,7 @@ def process(
             help="Leave original files untouched, copy then rename."
         ),
         preset: Optional[Preset] = typer.Option(
-            Preset.fujifilm_xt5_still,
+            Preset.auto,
             "--preset",
             "-p",
             case_sensitive=False,
@@ -106,7 +106,7 @@ def texif(
             help="The level of generated TEXIF data to use, only applies to simple TEXIFs."
         ),
         preset: Optional[Preset] = typer.Option(
-            Preset.fujifilm_xt5_still,
+            Preset.auto,
             "--preset",
             "-p",
             case_sensitive=False,
