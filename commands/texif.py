@@ -2,7 +2,6 @@ import json
 import os
 import traceback
 from datetime import datetime
-from zoneinfo import ZoneInfo
 from enum import Enum
 from typing import TextIO
 
@@ -201,7 +200,7 @@ class Texif:
                     generation_datetime = datetime.now().astimezone()
                     generation_offset = generation_datetime.strftime("%z")
                     generation_offset_formatted = f"{generation_offset[:3]}:{generation_offset[3:]}"
-                    generation_datetime_formatted =\
+                    generation_datetime_formatted = \
                         generation_datetime.strftime("%Y:%m:%d %H:%M:%S") + generation_offset_formatted
                     Util.write_with_newline(texif_file, f"TEXIF created: {generation_datetime_formatted}")
                     Util.write_with_newline(texif_file)
