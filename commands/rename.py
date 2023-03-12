@@ -34,18 +34,18 @@ class Rename:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
+            num_files = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 
             if self.keep_original:
-                self.do_rename(exiftool, Rename.do_rename_copy, num_images)
+                self.do_rename(exiftool, Rename.do_rename_copy, num_files)
             else:
-                self.do_rename(exiftool, Rename.do_rename_move, num_images)
+                self.do_rename(exiftool, Rename.do_rename_move, num_files)
 
         Printer.done_all()
 
-    def do_rename(self, exiftool: ExifTool, file_modification_closure, num_images: int):
+    def do_rename(self, exiftool: ExifTool, file_modification_closure, num_files: int):
         new_file_names = []
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
@@ -57,7 +57,7 @@ class Rename:
                     self.step_count,
                     self.total_steps
                 ),
-                total=num_images
+                total=num_files
             )
 
             previous_filename = ""

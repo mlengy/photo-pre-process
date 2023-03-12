@@ -89,25 +89,25 @@ class Texif:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
+            num_files = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 
             type_caught = False
             if self.type == "simple" or self.type == "both":
                 type_caught = True
-                self.do_texif_simple(exiftool, num_images)
+                self.do_texif_simple(exiftool, num_files)
                 self.step_count += 1
             if self.type == "full" or self.type == "both":
                 type_caught = True
-                self.do_texif_full(exiftool, num_images)
+                self.do_texif_full(exiftool, num_files)
 
             if not type_caught:
                 Printer.error_and_abort(f"Type \[{self.type}] is not a valid type!")
 
         Printer.done_all()
 
-    def do_texif_full(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
+    def do_texif_full(self, exiftool: ExifTool, num_files: int, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}🌐 Starting TEXIF full (HTML)! 🌐\n")
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
@@ -121,7 +121,7 @@ class Texif:
                     self.step_count,
                     self.total_steps
                 ),
-                total=num_images
+                total=num_files
             )
 
             num_files_skipped = 0
@@ -158,7 +158,7 @@ class Texif:
 
         Printer.done()
 
-    def do_texif_simple(self, exiftool: ExifTool, num_images: int, output_directory: str = None):
+    def do_texif_simple(self, exiftool: ExifTool, num_files: int, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}📋 Starting TEXIF simple (TXT)! 📋\n")
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
@@ -187,7 +187,7 @@ class Texif:
                     self.step_count,
                     self.total_steps
                 ),
-                total=num_images
+                total=num_files
             )
 
             num_files_skipped = 0

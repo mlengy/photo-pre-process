@@ -25,15 +25,15 @@ class Exif:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_images = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
+            num_files = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
 
             Util.create_directory_or_abort(self.output_directory)
 
-            self.do_exif(exiftool, num_images)
+            self.do_exif(exiftool, num_files)
 
         Printer.done_all()
 
-    def do_exif(self, exiftool: ExifTool, num_images: int):
+    def do_exif(self, exiftool: ExifTool, num_files: int):
         Printer.console.print("")
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
@@ -44,7 +44,7 @@ class Exif:
                     self.step_count,
                     self.total_steps
                 ),
-                total=num_images
+                total=num_files
             )
 
             for count, file_name in enumerate(file_names):
@@ -65,7 +65,7 @@ class Exif:
                 progress.update(progress_task, completed=count + 1)
 
         num_files_in_directory = Util.num_files_in_directory(self.output_directory)
-        Printer.print_files_skipped(num_images - num_files_in_directory)
+        Printer.print_files_skipped(num_files - num_files_in_directory)
 
         Printer.done()
 
