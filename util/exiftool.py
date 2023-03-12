@@ -1,11 +1,13 @@
 import os
 import subprocess
 
+from util.config import Config
+
 
 class ExifTool(object):
     sentinel = "{ready}\n"
 
-    def __init__(self, executable="/usr/local/bin/exiftool"):
+    def __init__(self, executable=Config.exiftool_executable_path):
         self.executable = executable
 
     def __enter__(self):
