@@ -59,14 +59,17 @@ class FileName:
     def __str__(self):
         if self.__changed:
             self.__formatted = self.__format()
+            self.__changed = False
 
         return self.__formatted
 
     def update_style(self, style: Style):
-        self.__style = style
+        self.__changed = True
+        self.__style = style.value
 
     def update_rating(self, rating: Rating):
-        self.__rating = rating
+        self.__changed = True
+        self.__rating = rating.value
 
     @staticmethod
     def from_string(string: str):

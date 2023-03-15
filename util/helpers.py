@@ -134,8 +134,37 @@ class Printer:
         typer.confirm(f"⁉️  {text}", abort=True)
 
     @staticmethod
-    def progress_label(label: str, step: int, total: int):
+    def prompt_choices(text: str, choices: dict[int, str], default: str, prefix: str = ""):
+        choice_set = set(choices.values())
+        choice_int_set = set(choices.keys())
+
+        while True:
+            response = typer.prompt(f"{prefix}⁉️  {text}", default=default)
+            if response.isdigit() and int(response) in choice_int_set:
+                response = choices[int(response)]
+                Printer.waiting(f"Using \[{response}].", prefix=prefix)
+                break
+            elif response in choice_set:
+                Printer.waiting(f"Using \[{response}].", prefix=prefix)
+                break
+            else:
+                Printer.warning(f"\[{response}] is not a valid choice!", prefix=prefix)
+                Printer.__prompt_choices_print(choices, prefix)
+        return response.lower()
+
+    @staticmethod
+    def __prompt_choices_print(choices: dict[int, str], prefix: str = ""):
+        Printer.waiting("Valid choices are one of the following:", prefix=prefix)
+        for key, value in choices.items():
+            Printer.waiting(f"{key}: {value}", prefix=f"    {prefix}")
+
+    @staticmethod
+    def progress_label_with_steps(label: str, step: int, total: int):
         return f"{Printer.color_title}{label} {Printer.color_subtitle}(step {step} of {total})\n"
+
+    @staticmethod
+    def progress_label(label: str):
+        return f"{Printer.color_title}{label}\n"
 
     @staticmethod
     def progress_spinner():
@@ -146,11 +175,14 @@ class Printer:
         )
 
     @staticmethod
-    def print_files_skipped(num_files_skipped: int):
+    def print_files_skipped(num_files_skipped: int, warning: bool = False):
         if num_files_skipped == 0:
             Printer.waiting("All files processed successfully!\n")
         else:
-            Printer.error(f"Skipped processing for {num_files_skipped} file(s)!\n")
+            if warning:
+                Printer.warning(f"Skipped processing for {num_files_skipped} file(s)!\n")
+            else:
+                Printer.error(f"Skipped processing for {num_files_skipped} file(s)!\n")
 
     @staticmethod
     def divider():

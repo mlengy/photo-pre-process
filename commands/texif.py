@@ -89,34 +89,35 @@ class Texif:
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
-            num_files = len(Util.verify_extensions_in_directory(exiftool, self.extension, self.directory))
+            Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
             Util.create_directory_or_abort(self.output_directory)
 
             type_caught = False
             if self.type == "simple" or self.type == "both":
                 type_caught = True
-                self.do_texif_simple(exiftool, num_files)
+                self.do_texif_simple(exiftool)
                 self.step_count += 1
             if self.type == "full" or self.type == "both":
                 type_caught = True
-                self.do_texif_full(exiftool, num_files)
+                self.do_texif_full(exiftool)
 
             if not type_caught:
                 Printer.error_and_abort(f"Type \[{self.type}] is not a valid type!")
 
         Printer.done_all()
 
-    def do_texif_full(self, exiftool: ExifTool, num_files: int, output_directory: str = None):
+    def do_texif_full(self, exiftool: ExifTool, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}🌐 Starting TEXIF full (HTML)! 🌐\n")
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+        num_files = len(file_names)
 
         output_directory_override = self.output_directory if not output_directory else output_directory
 
-        with Progress(console=Printer.console) as progress:
+        with Progress(console=Printer.console, auto_refresh=False) as progress:
             progress_task = progress.add_task(
-                Printer.progress_label(
+                Printer.progress_label_with_steps(
                     "TEXIF full",
                     self.step_count,
                     self.total_steps
@@ -153,15 +154,17 @@ class Texif:
                 Printer.done(prefix="    ")
 
                 progress.update(progress_task, completed=count + 1)
+                progress.refresh()
 
         Printer.print_files_skipped(num_files_skipped)
 
         Printer.done()
 
-    def do_texif_simple(self, exiftool: ExifTool, num_files: int, output_directory: str = None):
+    def do_texif_simple(self, exiftool: ExifTool, output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}📋 Starting TEXIF simple (TXT)! 📋\n")
 
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+        num_files = len(file_names)
 
         output_directory_override = self.output_directory if not output_directory else output_directory
         preset_directory = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'presets'))
@@ -180,9 +183,9 @@ class Texif:
         required_tags_formatted.add(f"-{Tags.OffsetTimeOriginal}")
         required_tags_formatted = list(required_tags_formatted)
 
-        with Progress(console=Printer.console) as progress:
+        with Progress(console=Printer.console, auto_refresh=False) as progress:
             progress_task = progress.add_task(
-                Printer.progress_label(
+                Printer.progress_label_with_steps(
                     "TEXIF simple",
                     self.step_count,
                     self.total_steps
@@ -246,6 +249,7 @@ class Texif:
                 Printer.done(prefix="    ")
 
                 progress.update(progress_task, completed=count + 1)
+                progress.refresh()
 
         Printer.print_files_skipped(num_files_skipped)
 

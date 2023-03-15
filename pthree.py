@@ -4,7 +4,7 @@ import typer
 
 from commands.exif import Exif
 from commands.process import Process
-from commands.rename import Rename
+from commands.rename import Rename, EditType
 from commands.texif import Texif, Preset, TexifType, TexifLevel
 
 app = typer.Typer(help="Utility scripts to assist in renaming and generating metadata files for digital photos.")
@@ -42,7 +42,7 @@ def process(
             "JPG",
             "--extension",
             "--ext",
-            "-e",
+            "-x",
             help="The extension of files to process."
         )
 ):
@@ -70,15 +70,22 @@ def rename(
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
+        edit: Optional[EditType] = typer.Option(
+            EditType.none,
+            "--edit",
+            "-e",
+            case_sensitive=False,
+            help="Edit specific file name chunks instead of full rename."
+        ),
         extension: Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
-            "-e",
+            "-x",
             help="The extension of files to process."
         )
 ):
-    Rename(initials, directory, output_directory, keep_original, extension).rename()
+    Rename(initials, directory, output_directory, keep_original, edit, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos.")
@@ -116,7 +123,7 @@ def texif(
             "JPG",
             "--extension",
             "--ext",
-            "-e",
+            "-x",
             help="The extension of files to process."
         )
 ):
@@ -137,7 +144,7 @@ def exif(
             "JPG",
             "--extension",
             "--ext",
-            "-e",
+            "-x",
             help="The extension of files to process."
         )
 ):
