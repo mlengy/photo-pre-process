@@ -15,9 +15,13 @@ from util.helpers import Util, Printer
 
 class EditType(str, Enum):
     none = "none"
+    initials = "initials"
+    datetime = "datetime",
+    sequence = "sequence",
     style = "style"
     rating = "rating"
-    all = "all"
+    style_rating = "style_rating"
+    original = "original"
 
 
 class Rename:
@@ -87,17 +91,36 @@ class Rename:
 
         Printer.console.print(f"{Printer.color_title}✍️  Starting rename with edit! ✍️\n")
 
+        files_processed = 0
+
         for count, file_name in enumerate(file_names):
             previous_file_name = str(file_name)
             file_path = os.path.join(self.directory, previous_file_name)
 
             Printer.waiting(f"Renaming \[{file_path}]...")
 
-            if self.edit_type == EditType.style or self.edit_type == EditType.all:
-                file_name.update_style(Rename.__edit_prompt_style())
+            try:
+                if self.edit_type == EditType.initials:
+                    file_name.update_initials(Rename.__edit_prompt_initials(file_name.initials))
 
-            if self.edit_type == EditType.rating or self.edit_type == EditType.all:
-                file_name.update_rating(Rename.__edit_prompt_rating())
+                if self.edit_type == EditType.datetime:
+                    file_name.update_date_time(Rename.__edit_prompt_date_time(file_name.date_time))
+
+                if self.edit_type == EditType.sequence:
+                    file_name.update_sequence(Rename.__edit_prompt_sequence(file_name.sequence))
+
+                if self.edit_type == EditType.style or self.edit_type == EditType.style_rating:
+                    file_name.update_style(Rename.__edit_prompt_style(file_name.style.name))
+
+                if self.edit_type == EditType.rating or self.edit_type == EditType.style_rating:
+                    file_name.update_rating(Rename.__edit_prompt_rating(file_name.rating.name))
+
+                if self.edit_type == EditType.original:
+                    file_name.update_original(Rename.__edit_prompt_original(file_name.original))
+            except FileNameTypeError as error:
+                Printer.error("Error while updating filename!")
+                Printer.error(error.message)
+                continue
 
             new_file_name = str(file_name)
             new_file_names.append(new_file_name)
@@ -105,10 +128,17 @@ class Rename:
             full_path_to = os.path.join(self.output_directory, new_file_name)
             file_modification_closure(file_path, full_path_to)
 
+            files_processed += 1
+
         Printer.console.print("")
 
         num_files_in_directory = Util.num_files_in_directory(self.output_directory)
-        Printer.print_files_skipped(num_files - num_files_in_directory)
+
+        num_files_skipped = max(
+            num_files - num_files_in_directory,
+            num_files - files_processed
+        )
+        Printer.print_files_skipped(num_files_skipped)
 
         Printer.done()
 
@@ -250,26 +280,57 @@ class Rename:
             Printer.prompt_continue(f"Is this correct?")
 
     @staticmethod
-    def __edit_prompt_style():
-        return Style[
-            Printer.prompt_choices(
-                text="Enter style",
-                choices=Rename.styles,
-                default=Style.none.name,
-                prefix=Printer.tab
-            )
-        ]
+    def __edit_prompt_initials(default: str):
+        return Printer.prompt_valid(
+            text="Enter initials",
+            valid_closure=FileName.validate_initials,
+            default=str(default),
+            prefix=Printer.tab
+        )
 
     @staticmethod
-    def __edit_prompt_rating():
-        return Rating[
-            Printer.prompt_choices(
-                text="Enter rating",
-                choices=Rename.ratings,
-                default=Rating.none.name,
-                prefix=Printer.tab
-            )
-        ]
+    def __edit_prompt_date_time(default: str):
+        return Printer.prompt_valid(
+            text="Enter datetime",
+            valid_closure=FileName.validate_date_time,
+            default=str(default),
+            prefix=Printer.tab
+        )
+
+    @staticmethod
+    def __edit_prompt_sequence(default: str):
+        return Printer.prompt_valid(
+            text="Enter sequence",
+            valid_closure=FileName.validate_sequence,
+            default=str(default),
+            prefix=Printer.tab
+        )
+
+    @staticmethod
+    def __edit_prompt_style(default: str):
+        return Printer.prompt_choices(
+            text="Enter style",
+            choices=Rename.styles,
+            default=default,
+            prefix=Printer.tab
+        )
+
+    @staticmethod
+    def __edit_prompt_rating(default: str):
+        return Printer.prompt_choices(
+            text="Enter rating",
+            choices=Rename.ratings,
+            default=default,
+            prefix=Printer.tab
+        )
+
+    @staticmethod
+    def __edit_prompt_original(default: str):
+        return Printer.prompt(
+            text="Enter original",
+            default=default,
+            prefix=Printer.tab
+        )
 
     @staticmethod
     def start_message():

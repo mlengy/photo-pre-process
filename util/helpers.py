@@ -8,6 +8,7 @@ import typer
 from rich.console import Console
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
+from entities.filename import FileNameTypeError
 from util.constants import Tags
 from util.exiftool import ExifTool
 
@@ -60,12 +61,15 @@ class Util:
                 message = f"Getting files with extension \[{extension}] in directory \[{directory}]...\n" \
                     if not task_name else task_name
                 progress.add_task(message)
-                file_names = Util.deserialize_data(
-                    Util._get_valid_file_names(exiftool, extension, directory),
-                    soft_error=False
-                )
-                Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
-                Util.__sanitize_valid_file_names()
+                try:
+                    file_names = Util.deserialize_data(
+                        Util._get_valid_file_names(exiftool, extension, directory),
+                        soft_error=False
+                    )
+                    Util.__valid_file_names = list(map(lambda file_name: file_name[Tags.FileName], file_names))
+                    Util.__sanitize_valid_file_names()
+                except TypeError:
+                    Util.__valid_file_names = []
         return Util.__valid_file_names
 
     @staticmethod
@@ -89,7 +93,7 @@ class Util:
             Printer.error(f"Error while deserializing JSON data!")
             traceback.print_exc()
             if not soft_error:
-                raise typer.Abort()
+                raise TypeError()
 
     @staticmethod
     def _get_valid_file_names(exiftool: ExifTool, extension: str, directory):
@@ -136,12 +140,16 @@ class Printer:
         typer.confirm(f"⁉️  {text}", abort=True)
 
     @staticmethod
+    def prompt(text: str, default: str, prefix: str = ""):
+        return typer.prompt(f"{prefix}⁉️  {text}", default=default)
+
+    @staticmethod
     def prompt_choices(text: str, choices: dict[int, str], default: str, prefix: str = ""):
         choice_set = set(choices.values())
         choice_int_set = set(choices.keys())
 
         while True:
-            response = typer.prompt(f"{prefix}⁉️  {text}", default=default)
+            response = Printer.prompt(text, default, prefix)
             if response.isdigit() and int(response) in choice_int_set:
                 response = choices[int(response)]
                 Printer.waiting(f"Using \[{response}].", prefix=prefix)
@@ -153,6 +161,18 @@ class Printer:
                 Printer.warning(f"\[{response}] is not a valid choice!", prefix=prefix)
                 Printer.__prompt_choices_print(choices, prefix)
         return response.lower()
+
+    @staticmethod
+    def prompt_valid(text: str, valid_closure, default: str, prefix: str = ""):
+        while True:
+            response = str(Printer.prompt(text, default, prefix))
+            try:
+                valid_closure(response)
+                break
+            except FileNameTypeError as error:
+                Printer.warning(f"\[{response}] is not a valid choice!", prefix=prefix)
+                Printer.warning(error.message, prefix=prefix)
+        return response
 
     @staticmethod
     def __prompt_choices_print(choices: dict[int, str], prefix: str = ""):

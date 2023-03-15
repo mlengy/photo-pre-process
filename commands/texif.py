@@ -258,17 +258,20 @@ class Texif:
     def __automatically_select_preset(self, exiftool: ExifTool, file_names: list[str]):
         file_path = os.path.join(self.directory, file_names[0])
 
-        file_tags = Util.deserialize_data(
-            exiftool.execute_with_extension(
-                self.extension,
-                f"-{Tags.JSONFormat}",
-                f"-{Tags.Make}",
-                f"-{Tags.Model}",
-                f"-{Tags.FileType}",
-                file_path
-            ),
-            soft_error=False
-        )
+        try:
+            file_tags = Util.deserialize_data(
+                exiftool.execute_with_extension(
+                    self.extension,
+                    f"-{Tags.JSONFormat}",
+                    f"-{Tags.Make}",
+                    f"-{Tags.Model}",
+                    f"-{Tags.FileType}",
+                    file_path
+                ),
+                soft_error=False
+            )
+        except TypeError:
+            file_tags = []
 
         if not file_tags:
             Printer.error_and_abort("Failed to automatically select preset to use!")
