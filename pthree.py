@@ -4,6 +4,7 @@ import typer
 
 from commands.exif import Exif
 from commands.info import Info
+from commands.list import List
 from commands.process import Process
 from commands.rename import Rename, EditType
 from commands.texif import Texif, Preset, TexifType, TexifLevel
@@ -59,7 +60,7 @@ def rename(
         ),
         directory: str = typer.Argument(
             "./",
-            help="The directory containing photos to process."
+            help="The directory containing photos to rename."
         ),
         output_directory: str = typer.Argument(
             "output",
@@ -84,7 +85,7 @@ def rename(
             "--extension",
             "--ext",
             "-x",
-            help="The extension of files to process."
+            help="The extension of files to rename."
         )
 ):
     Rename(initials, directory, output_directory, keep_original, edit, extension).rename()
@@ -94,7 +95,7 @@ def rename(
 def texif(
         directory: str = typer.Argument(
             "./",
-            help="The directory containing photos to process."
+            help="The directory containing photos to generate TEXIFs for."
         ),
         output_directory: str = typer.Argument(
             "output",
@@ -126,7 +127,7 @@ def texif(
             "--extension",
             "--ext",
             "-x",
-            help="The extension of files to process."
+            help="The extension of files to generate TEXIFs for."
         )
 ):
     Texif(directory, output_directory, type, level, preset, extension).texif()
@@ -136,7 +137,7 @@ def texif(
 def exif(
         directory: str = typer.Argument(
             "./",
-            help="The directory containing photos to process."
+            help="The directory containing photos to generate EXIFs for."
         ),
         output_directory: str = typer.Argument(
             "output",
@@ -147,7 +148,7 @@ def exif(
             "--extension",
             "--ext",
             "-x",
-            help="The extension of files to process."
+            help="The extension of files to generate EXIFs for."
         )
 ):
     Exif(directory, output_directory, extension).exif()
@@ -157,14 +158,14 @@ def exif(
 def info(
         directory: str = typer.Argument(
             "./",
-            help="The directory containing photos to process."
+            help="The directory containing photos to list information for."
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
             "-x",
-            help="The extension of files to process."
+            help="The extension of files to list information for."
         )
 ):
     Info(directory, extension).info()
@@ -174,28 +175,59 @@ def info(
 def yank(
         directory: str = typer.Argument(
             "./",
-            help="The directory containing photos to process."
+            help="The directory containing photos to yank."
         ),
         output_directory: str = typer.Argument(
             "output",
-            help="The directory to output the results of renaming."
+            help="The directory to output the results of the yank."
         ),
         keep_original: bool = typer.Option(
             False,
             "--keep-original",
             "--keep",
             "-k",
-            help="Leave original files untouched, copy then rename."
+            help="Leave original files untouched, copy only."
         ),
         extension: Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
             "-x",
-            help="The extension of files to process."
+            help="The extension of files to yank."
         )
 ):
     Yank(directory, output_directory, keep_original, extension).yank()
+
+
+@app.command(help="Lists files in the specified directory.")
+def list(
+        directory: str = typer.Argument(
+            "./",
+            help="The directory containing photos to list."
+        ),
+        output_directory: str = typer.Option(
+            None,
+            "--output-directory",
+            "--output",
+            "-o",
+            help="The directory to output a text file containing the list of photos."
+        ),
+        full_path: bool = typer.Option(
+            False,
+            "--full-path",
+            "--full",
+            "-f",
+            help="List with the full path from the current working directory."
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            "--extension",
+            "--ext",
+            "-x",
+            help="The extension of files to list."
+        )
+):
+    List(directory, output_directory, full_path, extension).list()
 
 
 def main():

@@ -27,7 +27,7 @@ class Info:
     def __do_info(self, exiftool: ExifTool):
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
 
-        Printer.console.print(f"{Printer.color_title}📥 Starting info! 📥\n")
+        Printer.console.print(f"{Printer.color_title}ℹ️  Starting info! ℹ️\n")
 
         num_processed = 0
 
