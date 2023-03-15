@@ -102,9 +102,8 @@ class Rename:
             new_file_name = str(file_name)
             new_file_names.append(new_file_name)
 
-            full_path_from = os.path.join(self.directory, previous_file_name)
             full_path_to = os.path.join(self.output_directory, new_file_name)
-            file_modification_closure(full_path_from, full_path_to)
+            file_modification_closure(file_path, full_path_to)
 
         Printer.console.print("")
 
@@ -177,9 +176,8 @@ class Rename:
 
                 new_file_names.append(full_filename)
 
-                full_path_from = os.path.join(self.directory, file_name)
                 full_path_to = os.path.join(self.output_directory, full_filename)
-                file_modification_closure(full_path_from, full_path_to)
+                file_modification_closure(file_path, full_path_to)
 
                 progress.update(progress_task, completed=count + 1)
                 progress.refresh()
@@ -201,7 +199,7 @@ class Rename:
         with Progress(console=Printer.console, auto_refresh=False) as progress:
             progress_task = progress.add_task(
                 Printer.progress_label_with_steps(
-                    "Rename",
+                    "Filter",
                     self.step_count,
                     self.total_steps
                 ),

@@ -7,6 +7,7 @@ from commands.info import Info
 from commands.process import Process
 from commands.rename import Rename, EditType
 from commands.texif import Texif, Preset, TexifType, TexifLevel
+from commands.yank import Yank
 
 app = typer.Typer(help="Utility scripts to assist in renaming and generating metadata files for digital photos.")
 
@@ -167,6 +168,34 @@ def info(
         )
 ):
     Info(directory, extension).info()
+
+
+@app.command(help="Moves or copies files to a different location.")
+def yank(
+        directory: str = typer.Argument(
+            "./",
+            help="The directory containing photos to process."
+        ),
+        output_directory: str = typer.Argument(
+            "output",
+            help="The directory to output the results of renaming."
+        ),
+        keep_original: bool = typer.Option(
+            False,
+            "--keep-original",
+            "--keep",
+            "-k",
+            help="Leave original files untouched, copy then rename."
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            "--extension",
+            "--ext",
+            "-x",
+            help="The extension of files to process."
+        )
+):
+    Yank(directory, output_directory, keep_original, extension).yank()
 
 
 def main():

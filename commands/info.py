@@ -1,7 +1,3 @@
-import os
-
-from rich.progress import Progress
-
 from entities.filename import FileName, FileNameTypeError
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
@@ -29,8 +25,9 @@ class Info:
         Printer.done_all()
 
     def __do_info(self, exiftool: ExifTool):
-        Printer.console.print("")
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+        Printer.console.print(f"{Printer.color_title}📥 Starting info! 📥\n")
 
         num_processed = 0
 
@@ -47,7 +44,6 @@ class Info:
 
             Printer.print("")
 
-        Printer.print("")
         Printer.print_files_skipped(len(file_names) - num_processed)
 
         Printer.done()
