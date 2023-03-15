@@ -19,6 +19,7 @@ class Process:
             directory: str,
             output_directory: str,
             keep_original: bool,
+            reprocess: bool,
             preset: Preset,
             extension: str
     ):
@@ -26,6 +27,7 @@ class Process:
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
+        self.reprocess = reprocess
         self.preset = preset
         self.extension = extension
         self.step_count = 1
@@ -44,14 +46,20 @@ class Process:
         with ExifTool() as exiftool:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
-            Util.create_directory_or_abort(self.output_directory)
+            if self.reprocess:
+                media_destination = self.directory
+                meta_destination = os.path.join(self.directory, Process.meta_destination_name)
+            else:
+                Util.create_directory_or_abort(self.output_directory)
 
-            media_destination = os.path.join(self.output_directory, self.extension.lower())
-            meta_destination = os.path.join(media_destination, Process.meta_destination_name)
+                media_destination = os.path.join(self.output_directory, self.extension.lower())
+                meta_destination = os.path.join(media_destination, Process.meta_destination_name)
 
-            Util.create_directory_or_abort(media_destination)
+                Util.create_directory_or_abort(media_destination)
 
-            self.__rename(exiftool, media_destination)
+            if not self.reprocess:
+                self.__rename(exiftool, media_destination)
+
             self.__texif(exiftool, media_destination, meta_destination)
             self.__exif(exiftool, media_destination, meta_destination)
 

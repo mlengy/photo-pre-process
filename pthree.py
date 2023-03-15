@@ -34,6 +34,12 @@ def process(
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
+        reprocess: bool = typer.Option(
+            False,
+            "--reprocess",
+            "-r",
+            help="Assuming the specified directory is a previous output folder, regenerates meta folder and files."
+        ),
         preset: Optional[Preset] = typer.Option(
             Preset.auto,
             "--preset",
@@ -49,7 +55,7 @@ def process(
             help="The extension of files to process."
         )
 ):
-    Process(initials, directory, output_directory, keep_original, preset, extension).process()
+    Process(initials, directory, output_directory, keep_original, reprocess, preset, extension).process()
 
 
 @app.command(help="Rename photos into a consistent format.")
