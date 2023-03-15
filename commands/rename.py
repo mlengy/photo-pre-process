@@ -3,6 +3,7 @@ import shutil
 
 from rich.progress import Progress
 
+from entities.filename import FileName
 from util.config import Config
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -60,7 +61,7 @@ class Rename:
                 total=num_files
             )
 
-            previous_filename = ""
+            previous_datetime = ""
             sequence_number = 0
             num_files_skipped = 0
 
@@ -86,15 +87,21 @@ class Rename:
                     continue
 
                 formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
-                new_filename = f"{self.initials.upper()}-{formatted_date_time}-"
 
-                if new_filename == previous_filename:
+                if formatted_date_time == previous_datetime:
                     sequence_number += 1
                 else:
-                    previous_filename = new_filename
+                    previous_datetime = formatted_date_time
                     sequence_number = 0
 
-                full_filename = new_filename + f"{sequence_number:02d}-{file_name}"
+                full_filename = str(
+                    FileName(
+                        initials=self.initials,
+                        datetime=formatted_date_time,
+                        sequence=sequence_number,
+                        original=file_name
+                    )
+                )
 
                 new_file_names.append(full_filename)
 
