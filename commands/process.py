@@ -3,6 +3,7 @@ import os.path
 from commands.exif import Exif
 from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
+from entities.filename import FileName, FileNameTypeError
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -32,7 +33,11 @@ class Process:
     def process(self):
         Process.start_message()
 
-        Rename.verify_initials(self.initials)
+        try:
+            FileName.validate_initials(self.initials)
+        except FileNameTypeError as error:
+            Printer.error_and_abort(error.message)
+
         Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 

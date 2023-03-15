@@ -230,12 +230,12 @@ class Texif:
                         f"Media created: {file_tags[Tags.DateTimeOriginal]}{file_tags[Tags.OffsetTimeOriginal]}"
                     )
 
-                    generation_datetime = datetime.now().astimezone()
-                    generation_offset = generation_datetime.strftime("%z")
+                    generation_date_time = datetime.now().astimezone()
+                    generation_offset = generation_date_time.strftime("%z")
                     generation_offset_formatted = f"{generation_offset[:3]}:{generation_offset[3:]}"
-                    generation_datetime_formatted = \
-                        generation_datetime.strftime("%Y:%m:%d %H:%M:%S") + generation_offset_formatted
-                    Util.write_with_newline(texif_file, f"TEXIF created: {generation_datetime_formatted}")
+                    generation_date_time_formatted = \
+                        generation_date_time.strftime("%Y:%m:%d %H:%M:%S") + generation_offset_formatted
+                    Util.write_with_newline(texif_file, f"TEXIF created: {generation_date_time_formatted}")
                     Util.write_with_newline(texif_file, f"TEXIF preset: {self.preset}")
                     Util.write_with_newline(texif_file)
 

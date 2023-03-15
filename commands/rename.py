@@ -3,7 +3,7 @@ import shutil
 
 from rich.progress import Progress
 
-from entities.filename import FileName
+from entities.filename import FileName, FileNameTypeError
 from util.config import Config
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -30,7 +30,11 @@ class Rename:
     def rename(self):
         Rename.start_message()
 
-        Rename.verify_initials(self.initials)
+        try:
+            FileName.validate_initials(self.initials)
+        except FileNameTypeError as error:
+            Printer.error_and_abort(error.message)
+
         Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 
@@ -61,7 +65,7 @@ class Rename:
                 total=num_files
             )
 
-            previous_datetime = ""
+            previous_date_time = ""
             sequence_number = 0
             num_files_skipped = 0
 
@@ -76,7 +80,7 @@ class Rename:
                         f"-{Tags.JSONFormat}",
                         f"-{Tags.DateTimeOriginal}",
                         "-d",
-                        Config.rename_date_format,
+                        Config.file_name_date_format,
                         file_path
                     )
                 )
@@ -88,16 +92,16 @@ class Rename:
 
                 formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
 
-                if formatted_date_time == previous_datetime:
+                if formatted_date_time == previous_date_time:
                     sequence_number += 1
                 else:
-                    previous_datetime = formatted_date_time
+                    previous_date_time = formatted_date_time
                     sequence_number = 0
 
                 full_filename = str(
                     FileName(
                         initials=self.initials,
-                        datetime=formatted_date_time,
+                        date_time=formatted_date_time,
                         sequence=sequence_number,
                         original=file_name
                     )
@@ -126,11 +130,6 @@ class Rename:
     def do_rename_move(from_path: str, to_path: str):
         Printer.waiting(f"Moving \[{from_path}] to \[{to_path}]...")
         shutil.move(from_path, to_path)
-
-    @staticmethod
-    def verify_initials(initials: str):
-        if not (initials.isalnum() and 1 < len(initials) <= 10):
-            Printer.error_and_abort(f"Initials \[{initials}] is not valid!")
 
     @staticmethod
     def verify_possible_directory(directory: str):
