@@ -35,5 +35,6 @@ Invoke by running `pthree`.
 - `pthree texif` to automatically generate human readable text EXIF data in different formats according to presets.
 - `pthree exif` to automatically generate binary EXIF sidecar files.
 - `pthree process` as a shortcut to do all three above actions at the same time.
+- `pthree info` to decode information from renamed filenames.
 
 For more information, run `pthree --help`.

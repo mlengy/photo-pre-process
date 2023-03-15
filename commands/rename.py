@@ -2,8 +2,6 @@ import os.path
 import shutil
 from enum import Enum
 
-import typer
-from rich.prompt import Prompt
 from rich.progress import Progress
 
 from entities.filename import FileName, FileNameTypeError
@@ -142,7 +140,7 @@ class Rename:
                 file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Renaming \[{file_path}]...")
-                Printer.waiting(f"Generating formatted datetime for \[{file_path}]...", prefix="    ")
+                Printer.waiting(f"Generating formatted datetime for \[{file_path}]...", prefix=Printer.tab)
 
                 file_tags = Util.deserialize_data(
                     exiftool.execute_with_extension(
@@ -156,7 +154,7 @@ class Rename:
                 )
 
                 if not file_tags:
-                    Printer.warning(f"Skipping \[{file_path}] due to error!", prefix="    ")
+                    Printer.warning(f"Skipping \[{file_path}] due to error!", prefix=Printer.tab)
                     num_files_skipped += 1
                     continue
 
@@ -215,7 +213,7 @@ class Rename:
                     try:
                         Printer.waiting(f"Checking file \[{file_name}]...")
                         FileName.from_string(file_name)
-                        Printer.warning(f"Skipping \[{file_name}] as it is already renamed!", prefix="    ")
+                        Printer.warning(f"Skipping \[{file_name}] as it is already renamed!", prefix=Printer.tab)
                     except FileNameTypeError:
                         filtered_file_names.append(file_name)
                     finally:
@@ -227,8 +225,8 @@ class Rename:
                         Printer.waiting(f"Checking file \[{file_name}]...")
                         filtered_file_names.append(FileName.from_string(file_name))
                     except FileNameTypeError as error:
-                        Printer.warning(f"Skipping \[{file_name}] as it is malformed!", prefix="    ")
-                        Printer.warning(error.message, prefix="    ")
+                        Printer.warning(f"Skipping \[{file_name}] as it is malformed!", prefix=Printer.tab)
+                        Printer.warning(error.message, prefix=Printer.tab)
                     finally:
                         progress.update(progress_task, completed=count + 1)
                         progress.refresh()
@@ -239,12 +237,12 @@ class Rename:
 
     @staticmethod
     def do_rename_copy(from_path: str, to_path: str):
-        Printer.waiting(f"Copying \[{from_path}] to \[{to_path}]...", prefix="    ")
+        Printer.waiting(f"Copying \[{from_path}] to \[{to_path}]...", prefix=Printer.tab)
         shutil.copy2(from_path, to_path)
 
     @staticmethod
     def do_rename_move(from_path: str, to_path: str):
-        Printer.waiting(f"Moving \[{from_path}] to \[{to_path}]...", prefix="    ")
+        Printer.waiting(f"Moving \[{from_path}] to \[{to_path}]...", prefix=Printer.tab)
         shutil.move(from_path, to_path)
 
     @staticmethod
@@ -260,7 +258,7 @@ class Rename:
                 text="Enter style",
                 choices=Rename.styles,
                 default=Style.none.name,
-                prefix="    "
+                prefix=Printer.tab
             )
         ]
 
@@ -271,7 +269,7 @@ class Rename:
                 text="Enter rating",
                 choices=Rename.ratings,
                 default=Rating.none.name,
-                prefix="    "
+                prefix=Printer.tab
             )
         ]
 

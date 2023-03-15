@@ -63,6 +63,39 @@ class FileName:
 
         return self.__formatted
 
+    class PrettyFileName:
+        def __init__(
+                self,
+                initials: str,
+                date_time: str,
+                sequence: int,
+                original: str,
+                style: Style = Style.none,
+                rating: Rating = Rating.none
+        ):
+            self.original = original
+            self.extension = original.split('.')[1].upper()
+            self.initials = initials.upper()
+            date_time_object = datetime.strptime(date_time, Config.file_name_date_format)
+            self.date_time = date_time_object.strftime("%Y-%m-%d %H:%M:%S")
+            self.sequence = str(sequence)
+            self.style = FileName.PrettyFileName.__enum_name_to_pretty(style.name)
+            self.rating = FileName.PrettyFileName.__enum_name_to_pretty(rating.name)
+
+        @staticmethod
+        def __enum_name_to_pretty(enum_name: str):
+            return enum_name.replace('_', ' ').capitalize()
+
+    def to_pretty(self):
+        return FileName.PrettyFileName(
+            initials=self.__initials,
+            date_time=self.__date_time,
+            sequence=self.__sequence,
+            original=self.__original,
+            style=Style(self.__style),
+            rating=Rating(self.__rating)
+        )
+
     def update_style(self, style: Style):
         self.__changed = True
         self.__style = style.value

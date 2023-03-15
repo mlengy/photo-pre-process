@@ -146,12 +146,12 @@ class Texif:
                 file_name_extensionless = os.path.splitext(file_name)[0]
                 full_path_to = f"{os.path.join(output_directory_override, file_name_extensionless)}.html"
 
-                Printer.waiting(f"Writing full HTML dump to \[{full_path_to}]...", prefix="    ")
+                Printer.waiting(f"Writing full HTML dump to \[{full_path_to}]...", prefix=Printer.tab)
 
                 with open(full_path_to, "w") as texif_file:
                     texif_file.write(full_html_dump)
 
-                Printer.done(prefix="    ")
+                Printer.done(prefix=Printer.tab)
 
                 progress.update(progress_task, completed=count + 1)
                 progress.refresh()
@@ -200,7 +200,7 @@ class Texif:
 
                 Printer.waiting(f"Generating simple TEXIF for \[{file_path}]...")
 
-                Printer.waiting(f"Building tag JSON...", prefix="    ")
+                Printer.waiting(f"Building tag JSON...", prefix=Printer.tab)
                 file_tags = Util.deserialize_data(
                     exiftool.execute_with_extension(
                         self.extension,
@@ -219,12 +219,12 @@ class Texif:
 
                 for required_tag in required_tags:
                     if required_tag not in file_tags:
-                        Printer.warning(f"Warning: could not find tag \[{required_tag}]!", prefix="    ")
+                        Printer.warning(f"Warning: could not find tag \[{required_tag}]!", prefix=Printer.tab)
 
                 file_name_extensionless = os.path.splitext(file_name)[0]
                 full_path_to = f"{os.path.join(output_directory_override, file_name_extensionless)}.txt"
 
-                Printer.waiting(f"Writing TEXIF to \[{full_path_to}]...", prefix="    ")
+                Printer.waiting(f"Writing TEXIF to \[{full_path_to}]...", prefix=Printer.tab)
 
                 with open(full_path_to, "w") as texif_file:
                     Util.write_with_newline(texif_file, f"Media filename: {file_tags[Tags.FileName]}")
@@ -246,7 +246,7 @@ class Texif:
                         if self.level >= level:
                             self.__process_level(level, file_tags, texif_file)
 
-                Printer.done(prefix="    ")
+                Printer.done(prefix=Printer.tab)
 
                 progress.update(progress_task, completed=count + 1)
                 progress.refresh()

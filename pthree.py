@@ -3,6 +3,7 @@ from typing import Optional
 import typer
 
 from commands.exif import Exif
+from commands.info import Info
 from commands.process import Process
 from commands.rename import Rename, EditType
 from commands.texif import Texif, Preset, TexifType, TexifLevel
@@ -149,6 +150,23 @@ def exif(
         )
 ):
     Exif(directory, output_directory, extension).exif()
+
+
+@app.command(help="Decodes and displays information of renamed files.")
+def info(
+        directory: str = typer.Argument(
+            "./",
+            help="The directory containing photos to process."
+        ),
+        extension: Optional[str] = typer.Option(
+            "JPG",
+            "--extension",
+            "--ext",
+            "-x",
+            help="The extension of files to process."
+        )
+):
+    Info(directory, extension).info()
 
 
 def main():

@@ -118,7 +118,7 @@ class Util:
 
 
 class Printer:
-    console = Console()
+    console = Console(highlight=False)
 
     color_title = "[magenta]"
     color_subtitle = "[cyan]"
@@ -128,6 +128,8 @@ class Printer:
     color_waiting = "[bright_black]"
     color_warning = "[bright_yellow]"
     color_error = "[bright_red]"
+
+    tab = "    "
 
     @staticmethod
     def prompt_continue(text: str):
@@ -156,7 +158,7 @@ class Printer:
     def __prompt_choices_print(choices: dict[int, str], prefix: str = ""):
         Printer.waiting("Valid choices are one of the following:", prefix=prefix)
         for key, value in choices.items():
-            Printer.waiting(f"{key}: {value}", prefix=f"    {prefix}")
+            Printer.print(f"{key}: {value}", prefix=f"{Printer.tab}{prefix}")
 
     @staticmethod
     def progress_label_with_steps(label: str, step: int, total: int):
@@ -199,6 +201,10 @@ class Printer:
     @staticmethod
     def done(prefix: str = "", suffix: str = ""):
         Printer.console.print(f"{Printer.color_done}{prefix}👍 Done{suffix}!")
+
+    @staticmethod
+    def print(string: str, prefix: str = ""):
+        Printer.console.print(f"{Printer.color_waiting}{prefix}{string}")
 
     @staticmethod
     def waiting(string: str, prefix: str = ""):
