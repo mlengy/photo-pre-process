@@ -6,7 +6,8 @@ from util.helpers import Printer
 
 
 class Checker:
-    checkers_list = [checker for checker in FileNameChunk]
+    checkers_list: list[FileNameChunk] = [checker for checker in FileNameChunk]
+    checkers_list_pretty: list[str] = [checker.name for checker in checkers_list]
     checkers = set(checkers_list)
 
     __checker_to_builder = None
@@ -31,7 +32,8 @@ class Checker:
 
         return Checker.__checker_to_builder[checker]()
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         pass
 
     @staticmethod
@@ -53,9 +55,10 @@ class InitialsChecker(Checker):
         self.initials = initials
 
     def check(self, file_name: FileName):
-        return file_name.initials == self.initials
+        return file_name.initials.lower() == self.initials.lower()
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         initials = InitialsChecker.prompt(Config.file_name_initials_default)
         return InitialsChecker(initials)
 
@@ -77,7 +80,8 @@ class DateTimeChecker(Checker):
     def check(self, file_name: FileName):
         return file_name.date_time == self.date_time
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         date_time = DateTimeChecker.prompt(Config.file_name_date_default)
         return DateTimeChecker(date_time)
 
@@ -99,7 +103,8 @@ class SequenceChecker(Checker):
     def check(self, file_name: FileName):
         return file_name.sequence == self.sequence
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         sequence = SequenceChecker.prompt(Config.file_name_sequence_default)
         return SequenceChecker(int(sequence))
 
@@ -123,7 +128,8 @@ class StyleChecker(Checker):
     def check(self, file_name: FileName):
         return file_name.style == self.style
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         style = StyleChecker.prompt(Config.file_name_style_default)
         return StyleChecker(Style[style])
 
@@ -147,7 +153,8 @@ class RatingChecker(Checker):
     def check(self, file_name: FileName):
         return file_name.rating == self.rating
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         rating = RatingChecker.prompt(Config.file_name_rating_default)
         return RatingChecker(Rating[rating])
 
@@ -169,7 +176,8 @@ class OriginalChecker(Checker):
     def check(self, file_name: FileName):
         return file_name.original == self.original
 
-    def prompt_build(self):
+    @staticmethod
+    def prompt_build():
         original = OriginalChecker.prompt(Config.file_name_original_default)
         return OriginalChecker(original)
 

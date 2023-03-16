@@ -79,6 +79,13 @@ def rename(
             case_sensitive=False,
             help="Edit specific file name chunks instead of full rename."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to which files to rename."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -87,7 +94,7 @@ def rename(
             help="The extension of files to rename."
         )
 ):
-    Rename(directory, output_directory, keep_original, edit, extension).rename()
+    Rename(directory, output_directory, keep_original, edit, filter_files, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos.")
@@ -211,11 +218,11 @@ def list(
             "-o",
             help="The directory to output a text file containing the list of photos."
         ),
-        full_path: bool = typer.Option(
+        complete_path: bool = typer.Option(
             False,
-            "--full-path",
-            "--full",
-            "-f",
+            "--complete-path",
+            "--complete",
+            "-c",
             help="List with the full path from the current working directory."
         ),
         extension: typing.Optional[str] = typer.Option(
@@ -226,7 +233,7 @@ def list(
             help="The extension of files to list."
         )
 ):
-    List(directory, output_directory, full_path, extension).list()
+    List(directory, output_directory, complete_path, extension).list()
 
 
 def main():

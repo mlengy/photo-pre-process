@@ -36,7 +36,7 @@ class Filter:
 
     @staticmethod
     def print_skip(file_name: str, message: str):
-        Printer.waiting(f"Skipping {file_name} due to \[{message}]!")
+        Printer.warning(f"Skipping \[{file_name}] due to \[{message}]!", prefix=Printer.tab)
 
 
 class FormattedFilter(Filter):
@@ -68,10 +68,11 @@ class FormattedFilter(Filter):
                     Printer.waiting(f"Checking file \[{file_name}]...")
                     file_name_object = FileName.from_string(file_name)
 
-                    checks_pass, message = self._check_formatted_name(file_name_object)
+                    checks_pass, message = self.__check_formatted_name(file_name_object)
 
                     if not checks_pass:
                         Filter.print_skip(file_name, message)
+                        continue
 
                     self.filtered_file_names.append(file_name)
                     self.filtered_file_name_objects.append(file_name_object)
@@ -85,7 +86,7 @@ class FormattedFilter(Filter):
 
         return self.filtered_file_name_objects
 
-    def _check_formatted_name(self, file_name_object: FileName):
+    def __check_formatted_name(self, file_name_object: FileName):
         for checker in self.checkers:
             if not checker.check(file_name_object):
                 return False, checker.message
@@ -93,14 +94,19 @@ class FormattedFilter(Filter):
 
     def prompt_build_checkers(self):
         while True:
-            filters_response = Printer.prompt("Which filters would you like to apply?", "none")
-            checkers = set(filters_response.split(' '))
+            filters_response = Printer.prompt("Which filters would you like to apply?", "none", prefix="\n")
+            checkers = filters_response.split(' ')
+            checkers_set = set(checkers)
 
-            if checkers.issubset(Checker.checkers):
+            if filters_response == "none":
+                Printer.warning("Cancelling filtering!")
+                return
+
+            if checkers_set.issubset(Checker.checkers):
                 break
             else:
                 Printer.error("Filters must be separated by a single space [ ] and be one of the following:")
-                Printer.waiting(Checker.checkers_list)
+                Printer.waiting(str(Checker.checkers_list_pretty))
 
         for checker in checkers:
             self.checkers.append(Checker.build(checker))

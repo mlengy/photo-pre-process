@@ -32,12 +32,14 @@ class Rename:
             output_directory: str,
             keep_original: bool,
             edit_types: typing.List[FileNameChunk],
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
         self.edit_types = edit_types
+        self.filter_files = filter_files
         self.extension = extension
         self.step_count = 1
         self.total_steps = 2
@@ -65,6 +67,9 @@ class Rename:
 
         file_filter = Filter.build_filter(filter_type)
         file_filter.total_steps = 2
+
+        if filter_type == FilterType.FormattedFilter:
+            file_filter.prompt_build_checkers()
 
         filtered_file_names = file_filter.filter(file_names)
         self.step_count += 1
