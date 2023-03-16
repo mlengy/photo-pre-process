@@ -27,7 +27,7 @@ class Exif:
         with ExifTool() as exiftool:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
-            Util.create_directory_or_abort(self.output_directory)
+            Util.create_directory_or_abort(self.output_directory, self.directory)
 
             self.do_exif(exiftool)
 

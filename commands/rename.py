@@ -30,24 +30,22 @@ class Rename:
     edit_types: list[EditType] = [edit_type for edit_type in EditType]
     __edit_type_map = None
     edit_type_default_map = {
-        EditType.initials: "AA",
-        EditType.datetime: "00000000-000000",
-        EditType.sequence: "00",
-        EditType.style: Style.none.name,
-        EditType.rating: Rating.none.name,
-        EditType.original: "ORIGINAL"
+        EditType.initials: Config.file_name_initials_default,
+        EditType.datetime: Config.file_name_date_default,
+        EditType.sequence: Config.file_name_sequence_default,
+        EditType.style: Config.file_name_style_default,
+        EditType.rating: Config.file_name_rating_default,
+        EditType.original: Config.file_name_original_default
     }
 
     def __init__(
             self,
-            initials: str,
             directory: str,
             output_directory: str,
             keep_original: bool,
             edit_types: typing.List[EditType],
             extension: str
     ):
-        self.initials = initials
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
@@ -59,18 +57,12 @@ class Rename:
     def rename(self):
         Rename.start_message()
 
-        try:
-            FileName.validate_initials(self.initials)
-        except FileNameTypeError as error:
-            Printer.error_and_abort(error.message)
-
-        Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
-            Util.create_directory_or_abort(self.output_directory)
+            Util.create_directory_or_abort(self.output_directory, self.directory)
 
             if self.keep_original:
                 self.do_rename(exiftool, Rename.do_rename_copy)
@@ -218,7 +210,7 @@ class Rename:
                 try:
                     formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
                 except KeyError:
-                    formatted_date_time = "00000000-000000"
+                    formatted_date_time = Config.file_name_date_default
 
                 if formatted_date_time == previous_date_time:
                     sequence_number += 1
@@ -228,7 +220,6 @@ class Rename:
 
                 full_filename = str(
                     FileName(
-                        initials=self.initials,
                         date_time=formatted_date_time,
                         sequence=sequence_number,
                         original=file_name

@@ -31,15 +31,18 @@ class Util:
         return os.path.isdir(directory)
 
     @staticmethod
-    def create_directory_or_abort(directory: str):
+    def create_directory_or_abort(directory: str, input_directory: str):
         if not os.path.isdir(directory):
             Printer.waiting(f"Creating directory \[{directory}] since it does not exist.")
             os.makedirs(directory)
         else:
-            Printer.warning(f"Directory \[{directory}] already exists!")
-            Printer.prompt_continue_or_abort(f"This will overwrite [{directory}]! Continue?")
-            shutil.rmtree(directory)
-            Util.create_directory_or_abort(directory)
+            if Util.strip_slashes(directory) == Util.strip_slashes(input_directory):
+                Printer.waiting(f"Using input directory \[{directory}] as output directory...")
+            else:
+                Printer.warning(f"Directory \[{directory}] already exists!")
+                Printer.prompt_continue_or_abort(f"This will overwrite [{directory}]! Continue?")
+                shutil.rmtree(directory)
+                Util.create_directory_or_abort(directory, input_directory)
 
     @staticmethod
     def verify_extensions_in_directory(exiftool: ExifTool, extension: str, directory: str = "./"):

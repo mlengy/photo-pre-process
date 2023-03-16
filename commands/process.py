@@ -1,9 +1,8 @@
 import os.path
 
 from commands.exif import Exif
-from commands.rename import Rename, EditType
+from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
-from entities.filename import FileName, FileNameTypeError
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -15,7 +14,6 @@ class Process:
 
     def __init__(
             self,
-            initials: str,
             directory: str,
             output_directory: str,
             keep_original: bool,
@@ -23,7 +21,6 @@ class Process:
             preset: Preset,
             extension: str
     ):
-        self.initials = initials
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
@@ -35,12 +32,6 @@ class Process:
     def process(self):
         Process.start_message()
 
-        try:
-            FileName.validate_initials(self.initials)
-        except FileNameTypeError as error:
-            Printer.error_and_abort(error.message)
-
-        Rename.verify_possible_directory(self.initials)
         Util.verify_directory(self.directory)
 
         with ExifTool() as exiftool:
@@ -50,12 +41,12 @@ class Process:
                 media_destination = self.directory
                 meta_destination = os.path.join(self.directory, Process.meta_destination_name)
             else:
-                Util.create_directory_or_abort(self.output_directory)
+                Util.create_directory_or_abort(self.output_directory, self.directory)
 
                 media_destination = os.path.join(self.output_directory, self.extension.lower())
                 meta_destination = os.path.join(media_destination, Process.meta_destination_name)
 
-                Util.create_directory_or_abort(media_destination)
+                Util.create_directory_or_abort(media_destination, self.directory)
 
             if not self.reprocess:
                 self.__rename(exiftool, media_destination)
@@ -69,11 +60,10 @@ class Process:
         Rename.start_message()
 
         rename = Rename(
-            initials=self.initials,
             directory=self.directory,
             output_directory=media_destination,
             keep_original=self.keep_original,
-            edit_types=EditType.none,
+            edit_types=[],
             extension=self.extension
         )
 
@@ -94,8 +84,8 @@ class Process:
         meta_simple_destination = os.path.join(meta_destination, "simple")
         meta_full_destination = os.path.join(meta_destination, "full")
 
-        Util.create_directory_or_abort(meta_simple_destination)
-        Util.create_directory_or_abort(meta_full_destination)
+        Util.create_directory_or_abort(meta_simple_destination, self.directory)
+        Util.create_directory_or_abort(meta_full_destination, self.directory)
 
         texif = Texif(
             directory=media_destination,
@@ -123,7 +113,7 @@ class Process:
 
         meta_mie_destination = os.path.join(meta_destination, "mie")
 
-        Util.create_directory_or_abort(meta_mie_destination)
+        Util.create_directory_or_abort(meta_mie_destination, self.directory)
 
         exif = Exif(
             directory=media_destination,

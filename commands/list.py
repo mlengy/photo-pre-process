@@ -26,7 +26,7 @@ class List:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
             if self.output_directory:
-                Util.create_directory_or_abort(self.output_directory)
+                Util.create_directory_or_abort(self.output_directory, self.directory)
 
             self.__do_list(exiftool)
 

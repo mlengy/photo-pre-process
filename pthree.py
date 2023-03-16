@@ -15,10 +15,6 @@ app = typer.Typer(help="Utility scripts to assist in renaming and generating met
 
 @app.command(help="Renames photos, generates text EXIF, and generates EXIF files.")
 def process(
-        initials: str = typer.Argument(
-            ...,
-            help="Your initials to prefix renamed files with."
-        ),
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to process."
@@ -55,15 +51,11 @@ def process(
             help="The extension of files to process."
         )
 ):
-    Process(initials, directory, output_directory, keep_original, reprocess, preset, extension).process()
+    Process(directory, output_directory, keep_original, reprocess, preset, extension).process()
 
 
 @app.command(help="Rename photos into a consistent format.")
 def rename(
-        initials: str = typer.Argument(
-            ...,
-            help="Your initials to prefix renamed files with."
-        ),
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to rename."
@@ -80,7 +72,7 @@ def rename(
             help="Leave original files untouched, copy then rename."
         ),
         edit: typing.Optional[typing.List[EditType]] = typer.Option(
-            None,
+            [],
             "--edit",
             "-e",
             case_sensitive=False,
@@ -94,7 +86,7 @@ def rename(
             help="The extension of files to rename."
         )
 ):
-    Rename(initials, directory, output_directory, keep_original, edit, extension).rename()
+    Rename(directory, output_directory, keep_original, edit, extension).rename()
 
 
 @app.command(help="Generates text EXIF files for photos.")

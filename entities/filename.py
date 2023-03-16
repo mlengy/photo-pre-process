@@ -40,10 +40,10 @@ class FileName:
 
     def __init__(
             self,
-            initials: str,
             date_time: str,
             sequence: int,
             original: str,
+            initials: str = Config.file_name_initials_default,
             style: Style = Style.none,
             rating: Rating = Rating.none
     ):

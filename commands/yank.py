@@ -30,7 +30,7 @@ class Yank:
         with ExifTool() as exiftool:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
-            Util.create_directory_or_abort(self.output_directory)
+            Util.create_directory_or_abort(self.output_directory, self.directory)
 
             if self.keep_original:
                 self.__do_yank(exiftool, Rename.do_rename_copy)
