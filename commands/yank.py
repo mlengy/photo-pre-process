@@ -56,6 +56,9 @@ class Yank:
             )
 
             for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
                 file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Yanking \[{file_path}]...")
@@ -63,7 +66,7 @@ class Yank:
                 full_path_to = os.path.join(self.output_directory, file_name)
                 file_modification_closure(file_path, full_path_to)
 
-            progress.update(progress_task, completed=count + 1)
+            progress.update(progress_task, completed=num_files)
 
         num_files_in_directory = Util.num_files_in_directory(self.output_directory)
         Printer.print_files_skipped(num_files - num_files_in_directory)

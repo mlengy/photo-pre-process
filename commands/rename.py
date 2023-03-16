@@ -115,42 +115,60 @@ class Rename:
 
         Printer.print("")
 
-        for count, file_name in enumerate(file_names):
-            previous_file_name = str(file_name)
-            file_path = os.path.join(self.directory, previous_file_name)
+        with Progress(console=Printer.console, auto_refresh=False, disable=not bulk_rename) as progress:
+            progress_task = progress.add_task(
+                Printer.progress_label_with_steps(
+                    "Rename edit",
+                    self.step_count,
+                    self.total_steps
+                ),
+                total=num_files
+            )
 
-            Printer.waiting(f"Renaming \[{file_path}]...")
+            for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
 
-            if not bulk_rename:
-                default_values = [
-                    file_name.initials,
-                    file_name.date_time,
-                    file_name.sequence,
-                    file_name.style.name,
-                    file_name.rating.name,
-                    file_name.original
-                ]
+                previous_file_name = str(file_name)
+                file_path = os.path.join(self.directory, previous_file_name)
 
-                for index in edit_type_indices:
-                    update_values[index] = prompt_closures[index](default_values[index])
+                if bulk_rename:
+                    Printer.waiting(f"Renaming \[{file_path}]...")
+                else:
+                    Printer.waiting(f"{Printer.color_title}Rename "
+                                    f"{Printer.color_subtitle}({count + 1}/{num_files})"
+                                    f"{Printer.color_waiting} \[{file_path}]...")
 
-            try:
-                for index in edit_type_indices:
-                    file_name.update_chunk(index, update_values[index])
-            except FileNameTypeError as error:
-                Printer.error("Error while updating filename!")
-                Printer.error(error.message)
-                continue
+                if not bulk_rename:
+                    default_values = [
+                        file_name.initials,
+                        file_name.date_time,
+                        file_name.sequence,
+                        file_name.style.name,
+                        file_name.rating.name,
+                        file_name.original
+                    ]
 
-            new_file_name = str(file_name)
-            new_file_names.append(new_file_name)
+                    for index in edit_type_indices:
+                        update_values[index] = prompt_closures[index](default_values[index])
 
-            full_path_to = os.path.join(self.output_directory, new_file_name)
-            file_modification_closure(file_path, full_path_to)
+                try:
+                    for index in edit_type_indices:
+                        file_name.update_chunk(index, update_values[index])
+                except FileNameTypeError as error:
+                    Printer.error("Error while updating filename!")
+                    Printer.error(error.message)
+                    continue
 
-            files_processed += 1
+                new_file_name = str(file_name)
+                new_file_names.append(new_file_name)
 
-        Printer.console.print("")
+                full_path_to = os.path.join(self.output_directory, new_file_name)
+                file_modification_closure(file_path, full_path_to)
+
+                files_processed += 1
+
+            progress.update(progress_task, completed=num_files)
 
         num_files_in_directory = Util.num_files_in_directory(self.output_directory)
 
@@ -186,6 +204,9 @@ class Rename:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
                 file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Renaming \[{file_path}]...")
@@ -231,8 +252,7 @@ class Rename:
                 full_path_to = os.path.join(self.output_directory, full_filename)
                 file_modification_closure(file_path, full_path_to)
 
-                progress.update(progress_task, completed=count + 1)
-                progress.refresh()
+            progress.update(progress_task, completed=num_files)
 
         Printer.print_files_skipped(num_files_skipped)
 
@@ -260,26 +280,28 @@ class Rename:
 
             if invalid:
                 for count, file_name in enumerate(file_names):
+                    progress.update(progress_task, completed=count)
+                    progress.refresh()
                     try:
                         Printer.waiting(f"Checking file \[{file_name}]...")
                         FileName.from_string(file_name)
                         Printer.warning(f"Skipping \[{file_name}] as it is already renamed!", prefix=Printer.tab)
                     except FileNameTypeError:
                         filtered_file_names.append(file_name)
-                    finally:
-                        progress.update(progress_task, completed=count + 1)
-                        progress.refresh()
+
+                progress.update(progress_task, completed=num_files)
             else:
                 for count, file_name in enumerate(file_names):
+                    progress.update(progress_task, completed=count)
+                    progress.refresh()
                     try:
                         Printer.waiting(f"Checking file \[{file_name}]...")
                         filtered_file_names.append(FileName.from_string(file_name))
                     except FileNameTypeError as error:
                         Printer.warning(f"Skipping \[{file_name}] as it is malformed!", prefix=Printer.tab)
                         Printer.warning(error.message, prefix=Printer.tab)
-                    finally:
-                        progress.update(progress_task, completed=count + 1)
-                        progress.refresh()
+
+                progress.update(progress_task, completed=num_files)
 
         Printer.print_files_skipped(len(file_names) - len(filtered_file_names), warning=True)
 
@@ -301,7 +323,10 @@ class Rename:
     @staticmethod
     def do_rename_copy(from_path: str, to_path: str):
         Printer.waiting(f"Copying \[{from_path}] to \[{to_path}]...", prefix=Printer.tab)
-        shutil.copy2(from_path, to_path)
+        try:
+            shutil.copy2(from_path, to_path)
+        except shutil.SameFileError:
+            Printer.warning(f"Skipping copying \[{from_path}] as it would change nothing!", prefix=Printer.tab)
 
     @staticmethod
     def do_rename_move(from_path: str, to_path: str):

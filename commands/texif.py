@@ -128,6 +128,9 @@ class Texif:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
                 file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Generating full HTML dump for \[{file_path}]...")
@@ -153,8 +156,7 @@ class Texif:
 
                 Printer.done(prefix=Printer.tab)
 
-                progress.update(progress_task, completed=count + 1)
-                progress.refresh()
+            progress.update(progress_task, completed=num_files)
 
         Printer.print_files_skipped(num_files_skipped)
 
@@ -196,6 +198,9 @@ class Texif:
             num_files_skipped = 0
 
             for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
                 file_path = os.path.join(self.directory, file_name)
 
                 Printer.waiting(f"Generating simple TEXIF for \[{file_path}]...")
@@ -248,8 +253,7 @@ class Texif:
 
                 Printer.done(prefix=Printer.tab)
 
-                progress.update(progress_task, completed=count + 1)
-                progress.refresh()
+            progress.update(progress_task, completed=num_files)
 
         Printer.print_files_skipped(num_files_skipped)
 

@@ -49,6 +49,9 @@ class Exif:
             )
 
             for count, file_name in enumerate(file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
                 file_name_extensionless = os.path.splitext(file_name)[0]
                 full_path_from = os.path.join(self.directory, file_name)
                 full_path_to = f"{os.path.join(self.output_directory, file_name_extensionless)}.mie"
@@ -64,8 +67,7 @@ class Exif:
                     full_path_from
                 )
 
-                progress.update(progress_task, completed=count + 1)
-                progress.refresh()
+            progress.update(progress_task, completed=num_files)
 
         num_files_in_directory = Util.num_files_in_directory(self.output_directory)
         Printer.print_files_skipped(num_files - num_files_in_directory)
