@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import typing
 from enum import Enum
 
 from rich.progress import Progress
@@ -14,13 +15,11 @@ from util.helpers import Util, Printer
 
 
 class EditType(str, Enum):
-    none = "none"
     initials = "initials"
     datetime = "datetime",
     sequence = "sequence",
     style = "style"
     rating = "rating"
-    style_rating = "style_rating"
     original = "original"
 
 
@@ -28,20 +27,31 @@ class Rename:
     styles = {style.value: style.name for style in Style}
     ratings = {rating.value: rating.name for rating in Rating}
 
+    edit_types: list[EditType] = [edit_type for edit_type in EditType]
+    __edit_type_map = None
+    edit_type_default_map = {
+        EditType.initials: "AA",
+        EditType.datetime: "00000000-000000",
+        EditType.sequence: "00",
+        EditType.style: Style.none.name,
+        EditType.rating: Rating.none.name,
+        EditType.original: "ORIGINAL"
+    }
+
     def __init__(
             self,
             initials: str,
             directory: str,
             output_directory: str,
             keep_original: bool,
-            edit_type: EditType,
+            edit_types: typing.List[EditType],
             extension: str
     ):
         self.initials = initials
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
-        self.edit_type = edit_type
+        self.edit_types = edit_types
         self.extension = extension
         self.step_count = 1
         self.total_steps = 2
@@ -71,7 +81,7 @@ class Rename:
 
     def do_rename(self, exiftool: ExifTool, file_modification_closure):
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
-        should_full_rename = self.edit_type == EditType.none
+        should_full_rename = not self.edit_types
 
         filtered_file_names = self.__filter_file_names(file_names, invalid=should_full_rename)
         self.step_count += 1
@@ -79,7 +89,7 @@ class Rename:
         if not filtered_file_names:
             Printer.error_and_abort("There are no valid files to rename!")
 
-        if self.edit_type == EditType.none:
+        if not self.edit_types:
             self.__do_rename(exiftool, file_modification_closure, filtered_file_names)
         else:
             self.__do_edit(file_modification_closure, filtered_file_names)
@@ -93,30 +103,48 @@ class Rename:
 
         files_processed = 0
 
+        bulk_rename = Printer.prompt_continue("Would you like to bulk rename?")
+
+        num_edit_types = len(Rename.edit_types)
+        update_values = ["" for _ in range(num_edit_types)]
+        prompt_closures: list[typing.Callable[[str], str]] = [lambda string: string for _ in range(num_edit_types)]
+        edit_type_indices: list[int] = []
+
+        for edit_type in self.edit_types:
+            edit_type_index = Rename.edit_types.index(edit_type)
+
+            edit_type_indices.append(edit_type_index)
+            prompt_closures[edit_type_index] = Rename.edit_type_map().get(edit_type)
+
+        if bulk_rename:
+            for index in edit_type_indices:
+                default = Rename.edit_type_default_map[Rename.edit_types[index]]
+                update_values[index] = prompt_closures[index](default)
+
+        Printer.print("")
+
         for count, file_name in enumerate(file_names):
             previous_file_name = str(file_name)
             file_path = os.path.join(self.directory, previous_file_name)
 
             Printer.waiting(f"Renaming \[{file_path}]...")
 
+            if not bulk_rename:
+                default_values = [
+                    file_name.initials,
+                    file_name.date_time,
+                    file_name.sequence,
+                    file_name.style.name,
+                    file_name.rating.name,
+                    file_name.original
+                ]
+
+                for index in edit_type_indices:
+                    update_values[index] = prompt_closures[index](default_values[index])
+
             try:
-                if self.edit_type == EditType.initials:
-                    file_name.update_initials(Rename.__edit_prompt_initials(file_name.initials))
-
-                if self.edit_type == EditType.datetime:
-                    file_name.update_date_time(Rename.__edit_prompt_date_time(file_name.date_time))
-
-                if self.edit_type == EditType.sequence:
-                    file_name.update_sequence(Rename.__edit_prompt_sequence(file_name.sequence))
-
-                if self.edit_type == EditType.style or self.edit_type == EditType.style_rating:
-                    file_name.update_style(Rename.__edit_prompt_style(file_name.style.name))
-
-                if self.edit_type == EditType.rating or self.edit_type == EditType.style_rating:
-                    file_name.update_rating(Rename.__edit_prompt_rating(file_name.rating.name))
-
-                if self.edit_type == EditType.original:
-                    file_name.update_original(Rename.__edit_prompt_original(file_name.original))
+                for index in edit_type_indices:
+                    file_name.update_chunk(index, update_values[index])
             except FileNameTypeError as error:
                 Printer.error("Error while updating filename!")
                 Printer.error(error.message)
@@ -187,7 +215,10 @@ class Rename:
                     num_files_skipped += 1
                     continue
 
-                formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
+                try:
+                    formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
+                except KeyError:
+                    formatted_date_time = "00000000-000000"
 
                 if formatted_date_time == previous_date_time:
                     sequence_number += 1
@@ -264,6 +295,19 @@ class Rename:
         return filtered_file_names
 
     @staticmethod
+    def edit_type_map():
+        if not Rename.__edit_type_map:
+            Rename.__edit_type_map = {
+                EditType.initials: Rename.__edit_prompt_initials,
+                EditType.datetime: Rename.__edit_prompt_date_time,
+                EditType.sequence: Rename.__edit_prompt_sequence,
+                EditType.style: Rename.__edit_prompt_style,
+                EditType.rating: Rename.__edit_prompt_rating,
+                EditType.original: Rename.__edit_prompt_original
+            }
+        return Rename.__edit_type_map
+
+    @staticmethod
     def do_rename_copy(from_path: str, to_path: str):
         Printer.waiting(f"Copying \[{from_path}] to \[{to_path}]...", prefix=Printer.tab)
         shutil.copy2(from_path, to_path)
@@ -277,7 +321,7 @@ class Rename:
     def verify_possible_directory(directory: str):
         if Util.is_directory_valid(directory):
             Printer.warning(f"It looks like your initials \[{directory}] is a directory.")
-            Printer.prompt_continue(f"Is this correct?")
+            Printer.prompt_continue_or_abort(f"Is this correct?")
 
     @staticmethod
     def __edit_prompt_initials(default: str):

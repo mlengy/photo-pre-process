@@ -124,27 +124,41 @@ class FileName:
     def original(self):
         return self.__original
 
-    def update_initials(self, initials: str):
+    def update_chunk(self, chunk_index: int, string: str):
+        if chunk_index == 0:
+            self.__update_initials(string)
+        if chunk_index == 1:
+            self.__update_date_time(string)
+        if chunk_index == 2:
+            self.__update_sequence(string)
+        if chunk_index == 3:
+            self.__update_style(string)
+        if chunk_index == 4:
+            self.__update_rating(string)
+        if chunk_index == 5:
+            self.__update_original(string)
+
+    def __update_initials(self, initials: str):
         self.__changed = True
         self.__initials = FileName.validate_initials(initials)
 
-    def update_date_time(self, date_time: str):
+    def __update_date_time(self, date_time: str):
         self.__changed = True
         self.__date_time = FileName.validate_date_time(date_time)
 
-    def update_sequence(self, sequence: str):
+    def __update_sequence(self, sequence: str):
         self.__changed = True
         self.__sequence = FileName.validate_sequence(sequence)
 
-    def update_style(self, style: str):
+    def __update_style(self, style: str):
         self.__changed = True
         self.__style = FileName.__validate_style_name(style)
 
-    def update_rating(self, rating: str):
+    def __update_rating(self, rating: str):
         self.__changed = True
         self.__rating = FileName.__validate_rating_name(rating)
 
-    def update_original(self, original: str):
+    def __update_original(self, original: str):
         self.__changed = True
         self.__original = original
 

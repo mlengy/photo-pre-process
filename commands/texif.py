@@ -283,7 +283,7 @@ class Texif:
                           Texif.__decode_preset_chunk(Texif.preset_file_type_map, file_tags.get(Tags.FileType))]
         generated_preset = "_".join(decoded_chunks)
 
-        Printer.prompt_continue(f"Use automatically selected preset [{generated_preset}]?")
+        Printer.prompt_continue_or_abort(f"Use automatically selected preset [{generated_preset}]?")
 
         self.preset = generated_preset
 

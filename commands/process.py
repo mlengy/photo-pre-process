@@ -73,7 +73,7 @@ class Process:
             directory=self.directory,
             output_directory=media_destination,
             keep_original=self.keep_original,
-            edit_type=EditType.none,
+            edit_types=EditType.none,
             extension=self.extension
         )
 

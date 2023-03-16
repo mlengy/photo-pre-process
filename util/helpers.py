@@ -37,7 +37,7 @@ class Util:
             os.makedirs(directory)
         else:
             Printer.warning(f"Directory \[{directory}] already exists!")
-            Printer.prompt_continue(f"This will overwrite [{directory}]! Continue?")
+            Printer.prompt_continue_or_abort(f"This will overwrite [{directory}]! Continue?")
             shutil.rmtree(directory)
             Util.create_directory_or_abort(directory)
 
@@ -136,7 +136,11 @@ class Printer:
     tab = "    "
 
     @staticmethod
-    def prompt_continue(text: str):
+    def prompt_continue(text: str, prefix: str = ""):
+        return typer.confirm(f"{prefix}⁉️  {text}")
+
+    @staticmethod
+    def prompt_continue_or_abort(text: str):
         typer.confirm(f"⁉️  {text}", abort=True)
 
     @staticmethod

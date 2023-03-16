@@ -1,4 +1,4 @@
-from typing import Optional
+import typing
 
 import typer
 
@@ -40,14 +40,14 @@ def process(
             "-r",
             help="Assuming the specified directory is a previous output folder, regenerates meta folder and files."
         ),
-        preset: Optional[Preset] = typer.Option(
+        preset: typing.Optional[Preset] = typer.Option(
             Preset.auto,
             "--preset",
             "-p",
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -79,14 +79,14 @@ def rename(
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
-        edit: Optional[EditType] = typer.Option(
-            EditType.none,
+        edit: typing.Optional[typing.List[EditType]] = typer.Option(
+            None,
             "--edit",
             "-e",
             case_sensitive=False,
             help="Edit specific file name chunks instead of full rename."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -107,28 +107,28 @@ def texif(
             "output",
             help="The directory to output the results of TEXIF generation."
         ),
-        type: Optional[TexifType] = typer.Option(
+        type: typing.Optional[TexifType] = typer.Option(
             TexifType.both,
             "--type",
             "-t",
             case_sensitive=False,
             help="The type of TEXIF to generate."
         ),
-        level: Optional[TexifLevel] = typer.Option(
+        level: typing.Optional[TexifLevel] = typer.Option(
             TexifLevel.high,
             "--level",
             "-l",
             case_sensitive=False,
             help="The level of generated TEXIF data to use, only applies to simple TEXIFs."
         ),
-        preset: Optional[Preset] = typer.Option(
+        preset: typing.Optional[Preset] = typer.Option(
             Preset.auto,
             "--preset",
             "-p",
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -149,7 +149,7 @@ def exif(
             "output",
             help="The directory to output the results of EXIF (MIE) generation."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -166,7 +166,7 @@ def info(
             "./",
             help="The directory containing photos to list information for."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -194,7 +194,7 @@ def yank(
             "-k",
             help="Leave original files untouched, copy only."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
@@ -225,7 +225,7 @@ def list(
             "-f",
             help="List with the full path from the current working directory."
         ),
-        extension: Optional[str] = typer.Option(
+        extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
             "--ext",
