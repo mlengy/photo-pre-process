@@ -4,9 +4,10 @@ import typing
 
 from rich.progress import Progress
 
+from entities.checker import InitialsChecker, DateTimeChecker, SequenceChecker, StyleChecker, RatingChecker, \
+    OriginalChecker
 from entities.filename import FileName, FileNameTypeError, FileNameChunk
-from entities.rating import Rating
-from entities.style import Style
+from entities.filter import Filter, FilterType
 from util.config import Config
 from util.constants import Tags
 from util.exiftool import ExifTool
@@ -14,9 +15,6 @@ from util.helpers import Util, Printer
 
 
 class Rename:
-    styles = {style.value: style.name for style in Style}
-    ratings = {rating.value: rating.name for rating in Rating}
-
     edit_types: list[FileNameChunk] = [edit_type for edit_type in FileNameChunk]
     __edit_type_map = None
     edit_type_default_map = {
@@ -63,15 +61,18 @@ class Rename:
 
     def do_rename(self, exiftool: ExifTool, file_modification_closure):
         file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
-        should_full_rename = not self.edit_types
+        filter_type = FilterType.UnformattedFilter if not self.edit_types else FilterType.FormattedFilter
 
-        filtered_file_names = self.__filter_file_names(file_names, invalid=should_full_rename)
+        file_filter = Filter.build_filter(filter_type)
+        file_filter.total_steps = 2
+
+        filtered_file_names = file_filter.filter(file_names)
         self.step_count += 1
 
         if not filtered_file_names:
             Printer.error_and_abort("There are no valid files to rename!")
 
-        if not self.edit_types:
+        if filter_type == FilterType.UnformattedFilter:
             self.__do_rename(exiftool, file_modification_closure, filtered_file_names)
         else:
             self.__do_edit(file_modification_closure, filtered_file_names)
@@ -250,63 +251,16 @@ class Rename:
 
         Util.set_valid_file_names(new_file_names)
 
-    def __filter_file_names(self, file_names: list[str], invalid: bool):
-        num_files = len(file_names)
-
-        filtered_file_names = []
-
-        filter_type = "invalid" if invalid else "valid"
-        Printer.console.print(f"\n{Printer.color_title}✂️  Filtering for {filter_type} file names! ✂️\n")
-
-        with Progress(console=Printer.console, auto_refresh=False) as progress:
-            progress_task = progress.add_task(
-                Printer.progress_label_with_steps(
-                    "Filter",
-                    self.step_count,
-                    self.total_steps
-                ),
-                total=num_files
-            )
-
-            if invalid:
-                for count, file_name in enumerate(file_names):
-                    progress.update(progress_task, completed=count)
-                    progress.refresh()
-                    try:
-                        Printer.waiting(f"Checking file \[{file_name}]...")
-                        FileName.from_string(file_name)
-                        Printer.warning(f"Skipping \[{file_name}] as it is already renamed!", prefix=Printer.tab)
-                    except FileNameTypeError:
-                        filtered_file_names.append(file_name)
-
-                progress.update(progress_task, completed=num_files)
-            else:
-                for count, file_name in enumerate(file_names):
-                    progress.update(progress_task, completed=count)
-                    progress.refresh()
-                    try:
-                        Printer.waiting(f"Checking file \[{file_name}]...")
-                        filtered_file_names.append(FileName.from_string(file_name))
-                    except FileNameTypeError as error:
-                        Printer.warning(f"Skipping \[{file_name}] as it is malformed!", prefix=Printer.tab)
-                        Printer.warning(error.message, prefix=Printer.tab)
-
-                progress.update(progress_task, completed=num_files)
-
-        Printer.print_files_skipped(len(file_names) - len(filtered_file_names), warning=True)
-
-        return filtered_file_names
-
     @staticmethod
     def edit_type_map():
         if not Rename.__edit_type_map:
             Rename.__edit_type_map = {
-                FileNameChunk.initials: Rename.__edit_prompt_initials,
-                FileNameChunk.datetime: Rename.__edit_prompt_date_time,
-                FileNameChunk.sequence: Rename.__edit_prompt_sequence,
-                FileNameChunk.style: Rename.__edit_prompt_style,
-                FileNameChunk.rating: Rename.__edit_prompt_rating,
-                FileNameChunk.original: Rename.__edit_prompt_original
+                FileNameChunk.initials: InitialsChecker.prompt,
+                FileNameChunk.datetime: DateTimeChecker.prompt,
+                FileNameChunk.sequence: SequenceChecker.prompt,
+                FileNameChunk.style: StyleChecker.prompt,
+                FileNameChunk.rating: RatingChecker.prompt,
+                FileNameChunk.original: OriginalChecker.prompt
             }
         return Rename.__edit_type_map
 
@@ -328,59 +282,6 @@ class Rename:
         if Util.is_directory_valid(directory):
             Printer.warning(f"It looks like your initials \[{directory}] is a directory.")
             Printer.prompt_continue_or_abort(f"Is this correct?")
-
-    @staticmethod
-    def __edit_prompt_initials(default: str):
-        return Printer.prompt_valid(
-            text="Enter initials",
-            valid_closure=FileName.validate_initials,
-            default=str(default),
-            prefix=Printer.tab
-        )
-
-    @staticmethod
-    def __edit_prompt_date_time(default: str):
-        return Printer.prompt_valid(
-            text="Enter datetime",
-            valid_closure=FileName.validate_date_time,
-            default=str(default),
-            prefix=Printer.tab
-        )
-
-    @staticmethod
-    def __edit_prompt_sequence(default: str):
-        return Printer.prompt_valid(
-            text="Enter sequence",
-            valid_closure=FileName.validate_sequence,
-            default=str(default),
-            prefix=Printer.tab
-        )
-
-    @staticmethod
-    def __edit_prompt_style(default: str):
-        return Printer.prompt_choices(
-            text="Enter style",
-            choices=Rename.styles,
-            default=default,
-            prefix=Printer.tab
-        )
-
-    @staticmethod
-    def __edit_prompt_rating(default: str):
-        return Printer.prompt_choices(
-            text="Enter rating",
-            choices=Rename.ratings,
-            default=default,
-            prefix=Printer.tab
-        )
-
-    @staticmethod
-    def __edit_prompt_original(default: str):
-        return Printer.prompt(
-            text="Enter original",
-            default=default,
-            prefix=Printer.tab
-        )
 
     @staticmethod
     def start_message():
