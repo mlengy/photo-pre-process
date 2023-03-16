@@ -1,11 +1,10 @@
 import os.path
 import shutil
 import typing
-from enum import Enum
 
 from rich.progress import Progress
 
-from entities.filename import FileName, FileNameTypeError
+from entities.filename import FileName, FileNameTypeError, FileNameChunk
 from entities.rating import Rating
 from entities.style import Style
 from util.config import Config
@@ -14,28 +13,19 @@ from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
 
-class EditType(str, Enum):
-    initials = "initials"
-    datetime = "datetime",
-    sequence = "sequence",
-    style = "style"
-    rating = "rating"
-    original = "original"
-
-
 class Rename:
     styles = {style.value: style.name for style in Style}
     ratings = {rating.value: rating.name for rating in Rating}
 
-    edit_types: list[EditType] = [edit_type for edit_type in EditType]
+    edit_types: list[FileNameChunk] = [edit_type for edit_type in FileNameChunk]
     __edit_type_map = None
     edit_type_default_map = {
-        EditType.initials: Config.file_name_initials_default,
-        EditType.datetime: Config.file_name_date_default,
-        EditType.sequence: Config.file_name_sequence_default,
-        EditType.style: Config.file_name_style_default,
-        EditType.rating: Config.file_name_rating_default,
-        EditType.original: Config.file_name_original_default
+        FileNameChunk.initials: Config.file_name_initials_default,
+        FileNameChunk.datetime: Config.file_name_date_default,
+        FileNameChunk.sequence: Config.file_name_sequence_default,
+        FileNameChunk.style: Config.file_name_style_default,
+        FileNameChunk.rating: Config.file_name_rating_default,
+        FileNameChunk.original: Config.file_name_original_default
     }
 
     def __init__(
@@ -43,7 +33,7 @@ class Rename:
             directory: str,
             output_directory: str,
             keep_original: bool,
-            edit_types: typing.List[EditType],
+            edit_types: typing.List[FileNameChunk],
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
@@ -311,12 +301,12 @@ class Rename:
     def edit_type_map():
         if not Rename.__edit_type_map:
             Rename.__edit_type_map = {
-                EditType.initials: Rename.__edit_prompt_initials,
-                EditType.datetime: Rename.__edit_prompt_date_time,
-                EditType.sequence: Rename.__edit_prompt_sequence,
-                EditType.style: Rename.__edit_prompt_style,
-                EditType.rating: Rename.__edit_prompt_rating,
-                EditType.original: Rename.__edit_prompt_original
+                FileNameChunk.initials: Rename.__edit_prompt_initials,
+                FileNameChunk.datetime: Rename.__edit_prompt_date_time,
+                FileNameChunk.sequence: Rename.__edit_prompt_sequence,
+                FileNameChunk.style: Rename.__edit_prompt_style,
+                FileNameChunk.rating: Rename.__edit_prompt_rating,
+                FileNameChunk.original: Rename.__edit_prompt_original
             }
         return Rename.__edit_type_map
 

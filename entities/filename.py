@@ -1,4 +1,5 @@
 from datetime import datetime
+from enum import Enum
 
 from entities.rating import Rating
 from entities.style import Style
@@ -9,6 +10,15 @@ class FileNameTypeError(TypeError):
     def __init__(self, message: str):
         self.message = message
         super().__init__(self.message)
+
+
+class FileNameChunk(str, Enum):
+    initials = "initials"
+    datetime = "datetime",
+    sequence = "sequence",
+    style = "style"
+    rating = "rating"
+    original = "original"
 
 
 class FileName:

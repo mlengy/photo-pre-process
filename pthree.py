@@ -6,9 +6,10 @@ from commands.exif import Exif
 from commands.info import Info
 from commands.list import List
 from commands.process import Process
-from commands.rename import Rename, EditType
+from commands.rename import Rename
 from commands.texif import Texif, Preset, TexifType, TexifLevel
 from commands.yank import Yank
+from entities.filename import FileNameChunk
 
 app = typer.Typer(help="Utility scripts to assist in renaming and generating metadata files for digital photos.")
 
@@ -71,7 +72,7 @@ def rename(
             "-k",
             help="Leave original files untouched, copy then rename."
         ),
-        edit: typing.Optional[typing.List[EditType]] = typer.Option(
+        edit: typing.Optional[typing.List[FileNameChunk]] = typer.Option(
             [],
             "--edit",
             "-e",
