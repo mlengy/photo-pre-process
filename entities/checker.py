@@ -13,9 +13,13 @@ class Checker:
     __checker_to_builder = None
 
     def __init__(self, message: str):
+        self.checks_strings = True
         self.message = message
 
     def check(self, file_name: FileName):
+        pass
+
+    def check_string(self, file_name: str):
         pass
 
     @staticmethod
@@ -44,18 +48,26 @@ class Checker:
 class HiddenChecker(Checker):
     def __init__(self):
         super().__init__("hidden file")
+        self.checks_strings = True
 
     def check(self, file_name: FileName):
         return not str(file_name).startswith('.')
+
+    def check_string(self, file_name: str):
+        return not file_name.startswith('.')
 
 
 class InitialsChecker(Checker):
     def __init__(self, initials: str):
         super().__init__("initials did not match")
+        self.checks_strings = False
         self.initials = initials
 
     def check(self, file_name: FileName):
         return file_name.initials.lower() == self.initials.lower()
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():
@@ -74,11 +86,15 @@ class InitialsChecker(Checker):
 
 class DateTimeChecker(Checker):
     def __init__(self, date_time: str):
-        super().__init__("")
+        super().__init__("datetime did not match")
+        self.checks_strings = False
         self.date_time = date_time
 
     def check(self, file_name: FileName):
         return file_name.date_time == self.date_time
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():
@@ -97,11 +113,15 @@ class DateTimeChecker(Checker):
 
 class SequenceChecker(Checker):
     def __init__(self, sequence: int):
-        super().__init__("")
+        super().__init__("sequence did not match")
+        self.checks_strings = False
         self.sequence = sequence
 
     def check(self, file_name: FileName):
         return file_name.sequence == self.sequence
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():
@@ -122,11 +142,15 @@ class StyleChecker(Checker):
     styles = {style.value: style.name for style in Style}
 
     def __init__(self, style: Style):
-        super().__init__("")
+        super().__init__("style did not match")
+        self.checks_strings = False
         self.style = style
 
     def check(self, file_name: FileName):
         return file_name.style == self.style
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():
@@ -147,11 +171,15 @@ class RatingChecker(Checker):
     ratings = {rating.value: rating.name for rating in Rating}
 
     def __init__(self, rating: Rating):
-        super().__init__("")
+        super().__init__("rating did not match")
+        self.checks_strings = False
         self.rating = rating
 
     def check(self, file_name: FileName):
         return file_name.rating == self.rating
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():
@@ -170,11 +198,15 @@ class RatingChecker(Checker):
 
 class OriginalChecker(Checker):
     def __init__(self, original: str):
-        super().__init__("")
+        super().__init__("original did not match")
+        self.checks_strings = False
         self.original = original
 
     def check(self, file_name: FileName):
         return file_name.original == self.original
+
+    def check_string(self, file_name: str):
+        pass
 
     @staticmethod
     def prompt_build():

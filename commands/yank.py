@@ -3,6 +3,7 @@ import os
 from rich.progress import Progress
 
 from commands.rename import Rename
+from entities.filter import Filter
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -13,14 +14,16 @@ class Yank:
             directory: str,
             output_directory: str,
             keep_original: bool,
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
         self.keep_original = keep_original
+        self.filter_files = filter_files
         self.extension = extension
         self.step_count = 1
-        self.total_steps = 1
+        self.total_steps = 2
 
     def yank(self):
         Yank.start_message()
@@ -32,15 +35,23 @@ class Yank:
 
             Util.create_directory_or_abort(self.output_directory, self.directory)
 
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+            formatted_filter = Filter.build_filter(self.filter_files, self.total_steps)
+            filtered_file_names = formatted_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to yank!")
+
             if self.keep_original:
-                self.__do_yank(exiftool, Rename.do_rename_copy)
+                self.__do_yank(filtered_file_names, Rename.do_rename_copy)
             else:
-                self.__do_yank(exiftool, Rename.do_rename_move)
+                self.__do_yank(filtered_file_names, Rename.do_rename_move)
 
         Printer.done_all()
 
-    def __do_yank(self, exiftool: ExifTool, file_modification_closure):
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+    def __do_yank(self, file_names: list[str], file_modification_closure):
         num_files = len(file_names)
 
         Printer.console.print(f"\n{Printer.color_title}📥 Starting yank! 📥\n")

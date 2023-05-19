@@ -1,5 +1,6 @@
 import os.path
 
+from entities.filter import Filter
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -10,14 +11,18 @@ class List:
             directory: str,
             output_directory: str,
             full_path: bool,
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = None if not output_directory else Util.strip_slashes(output_directory)
         self.full_path = full_path
+        self.filter_files = filter_files
         self.extension = extension
+        self.step_count = 1
+        self.total_steps = 1
 
-    def list(self):
+    def ls(self):
         List.start_message()
 
         Util.verify_directory(self.directory)
@@ -28,13 +33,20 @@ class List:
             if self.output_directory:
                 Util.create_directory_or_abort(self.output_directory, self.directory)
 
-            self.__do_list(exiftool)
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+            formatted_filter = Filter.build_filter(self.filter_files, self.total_steps)
+            filtered_file_names = formatted_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to list!")
+
+        self.__do_list(filtered_file_names)
 
         Printer.done_all()
 
-    def __do_list(self, exiftool: ExifTool):
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
-
+    def __do_list(self, file_names: list[str]):
         if self.output_directory:
             Printer.print("")
 

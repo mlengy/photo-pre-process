@@ -44,6 +44,13 @@ def process(
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to process."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -52,7 +59,7 @@ def process(
             help="The extension of files to process."
         )
 ):
-    Process(directory, output_directory, keep_original, reprocess, preset, extension).process()
+    Process(directory, output_directory, keep_original, reprocess, preset, filter_files, extension).process()
 
 
 @app.command(help="Rename photos into a consistent format.")
@@ -84,7 +91,7 @@ def rename(
             "--filter_files"
             "--filter",
             "-f",
-            help="Add filter(s) to which files to rename."
+            help="Add filter(s) to determine which files to rename."
         ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
@@ -128,6 +135,13 @@ def texif(
             case_sensitive=False,
             help="The TEXIF file format preset to use."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to generate TEXIFs for."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -136,7 +150,7 @@ def texif(
             help="The extension of files to generate TEXIFs for."
         )
 ):
-    Texif(directory, output_directory, type, level, preset, extension).texif()
+    Texif(directory, output_directory, type, level, preset, filter_files, extension).texif()
 
 
 @app.command(help="Generates EXIF files for photos.")
@@ -149,6 +163,13 @@ def exif(
             "output",
             help="The directory to output the results of EXIF (MIE) generation."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to generate EXIFs for."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -157,7 +178,7 @@ def exif(
             help="The extension of files to generate EXIFs for."
         )
 ):
-    Exif(directory, output_directory, extension).exif()
+    Exif(directory, output_directory, filter_files, extension).exif()
 
 
 @app.command(help="Decodes and displays information of renamed files.")
@@ -165,6 +186,13 @@ def info(
         directory: str = typer.Argument(
             "./",
             help="The directory containing photos to list information for."
+        ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to list information for."
         ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
@@ -174,7 +202,7 @@ def info(
             help="The extension of files to list information for."
         )
 ):
-    Info(directory, extension).info()
+    Info(directory, filter_files, extension).info()
 
 
 @app.command(help="Moves or copies files to a different location.")
@@ -194,6 +222,13 @@ def yank(
             "-k",
             help="Leave original files untouched, copy only."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to yank."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -202,7 +237,7 @@ def yank(
             help="The extension of files to yank."
         )
 ):
-    Yank(directory, output_directory, keep_original, extension).yank()
+    Yank(directory, output_directory, keep_original, filter_files, extension).yank()
 
 
 @app.command(help="Lists files in the specified directory.")
@@ -225,6 +260,13 @@ def list(
             "-c",
             help="List with the full path from the current working directory."
         ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to list."
+        ),
         extension: typing.Optional[str] = typer.Option(
             "JPG",
             "--extension",
@@ -233,7 +275,7 @@ def list(
             help="The extension of files to list."
         )
 ):
-    List(directory, output_directory, complete_path, extension).list()
+    List(directory, output_directory, complete_path, filter_files, extension).ls()
 
 
 def main():

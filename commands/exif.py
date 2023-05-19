@@ -2,6 +2,7 @@ import os
 
 from rich.progress import Progress
 
+from entities.filter import Filter
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -11,13 +12,15 @@ class Exif:
             self,
             directory: str,
             output_directory: str,
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
         self.output_directory = Util.strip_slashes(output_directory)
+        self.filter_files = filter_files
         self.extension = extension
         self.step_count = 1
-        self.total_steps = 1
+        self.total_steps = 2
 
     def exif(self):
         Exif.start_message()
@@ -29,13 +32,21 @@ class Exif:
 
             Util.create_directory_or_abort(self.output_directory, self.directory)
 
-            self.do_exif(exiftool)
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+            formatted_filter = Filter.build_filter(self.filter_files, self.total_steps)
+            filtered_file_names = formatted_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to generate EXIFs for!")
+
+            self.do_exif(exiftool, filtered_file_names)
 
         Printer.done_all()
 
-    def do_exif(self, exiftool: ExifTool):
+    def do_exif(self, exiftool: ExifTool, file_names: list[str]):
         Printer.console.print("")
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
         num_files = len(file_names)
 
         with Progress(console=Printer.console, auto_refresh=False) as progress:

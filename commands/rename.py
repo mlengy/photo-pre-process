@@ -54,33 +54,35 @@ class Rename:
 
             Util.create_directory_or_abort(self.output_directory, self.directory)
 
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+            filter_type = FilterType.UnformattedFilter if not self.edit_types else FilterType.FormattedFilter
+
+            file_filter = Filter.build_filter_by_type(filter_type)
+            file_filter.total_steps = 2
+
+            if filter_type == FilterType.FormattedFilter and self.filter_files:
+                file_filter.prompt_build_checkers()
+
+            filtered_file_names = file_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to rename!")
+
             if self.keep_original:
-                self.do_rename(exiftool, Rename.do_rename_copy)
+                self.do_rename(exiftool, filtered_file_names, Rename.do_rename_copy)
             else:
-                self.do_rename(exiftool, Rename.do_rename_move)
+                self.do_rename(exiftool, filtered_file_names, Rename.do_rename_move)
 
         Printer.done_all()
 
-    def do_rename(self, exiftool: ExifTool, file_modification_closure):
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+    def do_rename(self, exiftool: ExifTool, file_names: list[typing.Any], file_modification_closure):
         filter_type = FilterType.UnformattedFilter if not self.edit_types else FilterType.FormattedFilter
 
-        file_filter = Filter.build_filter(filter_type)
-        file_filter.total_steps = 2
-
-        if filter_type == FilterType.FormattedFilter:
-            file_filter.prompt_build_checkers()
-
-        filtered_file_names = file_filter.filter(file_names)
-        self.step_count += 1
-
-        if not filtered_file_names:
-            Printer.error_and_abort("There are no valid files to rename!")
-
         if filter_type == FilterType.UnformattedFilter:
-            self.__do_rename(exiftool, file_modification_closure, filtered_file_names)
+            self.__do_rename(exiftool, file_modification_closure, file_names)
         else:
-            self.__do_edit(file_modification_closure, filtered_file_names)
+            self.__do_edit(file_modification_closure, file_names)
 
     def __do_edit(self, file_modification_closure, file_names: list[FileName]):
         new_file_names = []
@@ -226,7 +228,8 @@ class Rename:
 
                 try:
                     formatted_date_time = file_tags[0][Tags.DateTimeOriginal]
-                except KeyError:
+                    FileName.validate_date_time(formatted_date_time)
+                except (KeyError, FileNameTypeError):
                     formatted_date_time = Config.file_name_date_default
 
                 if formatted_date_time == previous_date_time:

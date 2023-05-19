@@ -202,7 +202,14 @@ class FileName:
             )
         ]
 
-        chunks_formatted.extend(chunks[FileName.date_time_index + FileName.date_time_length:])
+        chunks_formatted.extend(
+            chunks[
+                FileName.date_time_index + FileName.date_time_length:FileName.original_index + FileName.date_time_length - 1
+            ]
+        )
+        chunks_formatted.append(
+            Config.file_name_delimiter.join(chunks[FileName.original_index + FileName.date_time_length - 1:])
+        )
 
         for index, chunk_formatted in enumerate(chunks_formatted):
             expected_length = FileName.expected_lengths[index]

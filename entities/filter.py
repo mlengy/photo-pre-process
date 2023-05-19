@@ -4,7 +4,7 @@ from rich.progress import Progress
 
 from entities.checker import HiddenChecker, Checker
 from entities.filename import FileName, FileNameTypeError
-from util.helpers import Printer
+from util.helpers import Printer, Util
 
 
 class FilterType(Enum):
@@ -23,10 +23,54 @@ class Filter:
         self.total_steps = 1
 
     def filter(self, file_names: list[str]):
-        pass
+        sorted_file_names = sorted(file_names)
+        num_files = len(sorted_file_names)
+        self.filtered_file_names = []
+
+        Printer.console.print(f"\n{Printer.color_title}✂️  Filtering file names! ✂️\n")
+
+        with Progress(console=Printer.console, auto_refresh=False) as progress:
+            progress_task = progress.add_task(
+                Printer.progress_label_with_steps(
+                    "Filter",
+                    self.step_count,
+                    self.total_steps
+                ),
+                total=num_files
+            )
+
+            for count, file_name in enumerate(sorted_file_names):
+                progress.update(progress_task, completed=count)
+                progress.refresh()
+
+                checks_pass, message = self._check_string_name(file_name)
+
+                if not checks_pass:
+                    Filter.print_skip(file_name, message)
+                    continue
+
+                self.filtered_file_names.append(file_name)
+
+            progress.update(progress_task, completed=num_files)
+
+        Printer.print_files_skipped(len(sorted_file_names) - len(self.filtered_file_names), warning=True)
+
+        Util.set_valid_file_names(self.filtered_file_names)
+
+        return self.filtered_file_names
+
+    def _check_string_name(self, file_name: str):
+        for checker in self.checkers:
+            if checker.checks_strings and not checker.check_string(file_name):
+                return False, checker.message
+            return True, ""
 
     @staticmethod
-    def build_filter(filter_type: FilterType):
+    def build_filter(filter_files: bool, total_steps: int):
+        return FormattedFilter.build(filter_files, total_steps) if filter_files else Filter()
+
+    @staticmethod
+    def build_filter_by_type(filter_type: FilterType):
         if filter_type == FilterType.FormattedFilter:
             return FormattedFilter()
         elif filter_type == FilterType.MirrorFormattedFilter:
@@ -44,8 +88,19 @@ class FormattedFilter(Filter):
         super().__init__()
         self.filtered_file_name_objects = []
 
+    @staticmethod
+    def build(build_checkers: bool = False, total_steps: int = 1):
+        formatted_filter = FormattedFilter()
+        formatted_filter.total_steps = total_steps
+
+        if build_checkers:
+            formatted_filter.prompt_build_checkers()
+
+        return formatted_filter
+
     def filter(self, file_names: list[str]):
-        num_files = len(file_names)
+        sorted_file_names = sorted(file_names)
+        num_files = len(sorted_file_names)
         self.filtered_file_names = []
         self.filtered_file_name_objects = []
 
@@ -61,7 +116,7 @@ class FormattedFilter(Filter):
                 total=num_files
             )
 
-            for count, file_name in enumerate(file_names):
+            for count, file_name in enumerate(sorted_file_names):
                 progress.update(progress_task, completed=count)
                 progress.refresh()
                 try:
@@ -82,7 +137,9 @@ class FormattedFilter(Filter):
 
             progress.update(progress_task, completed=num_files)
 
-        Printer.print_files_skipped(len(file_names) - len(self.filtered_file_name_objects), warning=True)
+        Printer.print_files_skipped(len(sorted_file_names) - len(self.filtered_file_name_objects), warning=True)
+
+        Util.set_valid_file_names(self.filtered_file_names)
 
         return self.filtered_file_name_objects
 
@@ -125,7 +182,8 @@ class UnformattedFilter(Filter):
         super().__init__()
 
     def filter(self, file_names: list[str]):
-        num_files = len(file_names)
+        sorted_file_names = sorted(file_names)
+        num_files = len(sorted_file_names)
         self.filtered_file_names = []
 
         Printer.console.print(f"\n{Printer.color_title}✂️  Filtering for unformatted file names! ✂️\n")
@@ -140,9 +198,16 @@ class UnformattedFilter(Filter):
                 total=num_files
             )
 
-            for count, file_name in enumerate(file_names):
+            for count, file_name in enumerate(sorted_file_names):
                 progress.update(progress_task, completed=count)
                 progress.refresh()
+
+                checks_pass, message = self._check_string_name(file_name)
+
+                if not checks_pass:
+                    Filter.print_skip(file_name, message)
+                    continue
+
                 try:
                     Printer.waiting(f"Checking file \[{file_name}]...")
                     FileName.from_string(file_name)
@@ -152,6 +217,8 @@ class UnformattedFilter(Filter):
 
             progress.update(progress_task, completed=num_files)
 
-        Printer.print_files_skipped(len(file_names) - len(self.filtered_file_names), warning=True)
+        Printer.print_files_skipped(len(sorted_file_names) - len(self.filtered_file_names), warning=True)
+
+        Util.set_valid_file_names(self.filtered_file_names)
 
         return self.filtered_file_names

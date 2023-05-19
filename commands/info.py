@@ -1,4 +1,5 @@
 from entities.filename import FileName, FileNameTypeError
+from entities.filter import Filter
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
 
@@ -7,10 +8,14 @@ class Info:
     def __init__(
             self,
             directory: str,
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
+        self.filter_files = filter_files
         self.extension = extension
+        self.step_count = 1
+        self.total_steps = 1
 
     def info(self):
         Info.start_message()
@@ -20,12 +25,21 @@ class Info:
         with ExifTool() as exiftool:
             Util.verify_extensions_in_directory(exiftool, self.extension, self.directory)
 
-            self.__do_info(exiftool)
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+            formatted_filter = Filter.build_filter(self.filter_files, self.total_steps)
+            filtered_file_names = formatted_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to list information for!")
+
+        self.__do_info(filtered_file_names)
 
         Printer.done_all()
 
-    def __do_info(self, exiftool: ExifTool):
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+    def __do_info(self, file_names: list[str]):
+        num_files = len(file_names)
 
         Printer.console.print(f"{Printer.color_title}ℹ️  Starting info! ℹ️\n")
 
@@ -44,7 +58,7 @@ class Info:
 
             Printer.print("")
 
-        Printer.print_files_skipped(len(file_names) - num_processed)
+        Printer.print_files_skipped(num_files - num_processed)
 
         Printer.done()
 

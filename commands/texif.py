@@ -8,6 +8,7 @@ from typing import TextIO
 import typer
 from rich.progress import Progress
 
+from entities.filter import Filter
 from util.constants import Tags
 from util.exiftool import ExifTool
 from util.helpers import Util, Printer
@@ -71,6 +72,7 @@ class Texif:
             type: TexifType,
             level: TexifLevel,
             preset: Preset,
+            filter_files: bool,
             extension: str
     ):
         self.directory = Util.strip_slashes(directory)
@@ -78,10 +80,11 @@ class Texif:
         self.type = type.value.lower()
         self.level = Texif.json_level_map[level.value]
         self.preset = preset.value
+        self.filter_files = filter_files
         self.extension = extension
         self.compiled_presets: list[list[tuple[str, list[str]]]] = []
         self.step_count = 1
-        self.total_steps = 2 if self.type == "both" else 1
+        self.total_steps = 3 if self.type == "both" else 2
 
     def texif(self):
         Texif.start_message()
@@ -93,24 +96,32 @@ class Texif:
 
             Util.create_directory_or_abort(self.output_directory, self.directory)
 
+            file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
+
+            formatted_filter = Filter.build_filter(self.filter_files, self.total_steps)
+            filtered_file_names = formatted_filter.filter(file_names)
+            self.step_count += 1
+
+            if not filtered_file_names:
+                Printer.error_and_abort("There are no valid files to generate TEXIFs for!")
+
             type_caught = False
             if self.type == "simple" or self.type == "both":
                 type_caught = True
-                self.do_texif_simple(exiftool)
+                self.do_texif_simple(exiftool, filtered_file_names)
                 self.step_count += 1
             if self.type == "full" or self.type == "both":
                 type_caught = True
-                self.do_texif_full(exiftool)
+                self.do_texif_full(exiftool, filtered_file_names)
 
             if not type_caught:
                 Printer.error_and_abort(f"Type \[{self.type}] is not a valid type!")
 
         Printer.done_all()
 
-    def do_texif_full(self, exiftool: ExifTool, output_directory: str = None):
+    def do_texif_full(self, exiftool: ExifTool, file_names: list[str], output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}🌐 Starting TEXIF full (HTML)! 🌐\n")
 
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
         num_files = len(file_names)
 
         output_directory_override = self.output_directory if not output_directory else output_directory
@@ -162,10 +173,9 @@ class Texif:
 
         Printer.done()
 
-    def do_texif_simple(self, exiftool: ExifTool, output_directory: str = None):
+    def do_texif_simple(self, exiftool: ExifTool, file_names: list[str], output_directory: str = None):
         Printer.console.print(f"\n{Printer.color_title}📋 Starting TEXIF simple (TXT)! 📋\n")
 
-        file_names = Util.get_valid_file_names(exiftool, self.extension, self.directory)
         num_files = len(file_names)
 
         output_directory_override = self.output_directory if not output_directory else output_directory

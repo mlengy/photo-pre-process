@@ -9,7 +9,7 @@ class Config:
     file_name_date_length = 15
 
     file_name_initials_default = "AA"
-    file_name_date_default = "00000000-000000"
+    file_name_date_default = "19700101-000000"
     file_name_sequence_default = "00"
     file_name_style_default = Style.none.name
     file_name_rating_default = Rating.none.name
