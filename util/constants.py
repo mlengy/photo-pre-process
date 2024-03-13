@@ -7,3 +7,5 @@ class Tags:
     OffsetTimeOriginal = "OffsetTimeOriginal"
     Make = "Make"
     Model = "Model"
+    Lens = "Lens"
+    UserComment = "UserComment"

@@ -3,6 +3,7 @@ import typing
 import typer
 
 from commands.exif import Exif
+from commands.film import Film
 from commands.info import Info
 from commands.list import List
 from commands.process import Process
@@ -276,6 +277,34 @@ def list(
         )
 ):
     List(directory, output_directory, complete_path, filter_files, extension).ls()
+
+
+@app.command(help="Generates human readable metadata from EXIF tagged film photos for Instagram.")
+def film(
+        directory: str = typer.Argument(
+            "./",
+            help="The directory containing film photos to generate metadata for."
+        ),
+        output_directory: str = typer.Argument(
+            "output",
+            help="The directory to output the generated film metadata text file."
+        ),
+        filter_files: bool = typer.Option(
+            False,
+            "--filter_files"
+            "--filter",
+            "-f",
+            help="Add filter(s) to determine which files to generate metadata for."
+        ),
+        extension: typing.Optional[str] = typer.Option(
+            "JPG",
+            "--extension",
+            "--ext",
+            "-x",
+            help="The extension of files to generate metadata for."
+        )
+):
+    Film(directory, output_directory, filter_files, extension).film()
 
 
 def main():
