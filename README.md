@@ -36,6 +36,8 @@ Invoke by running `pthree`.
 - `pthree exif` to automatically generate binary EXIF sidecar files.
 - `pthree process` as a shortcut to do all three above actions at the same time.
 - `pthree info` to decode information from renamed filenames.
+- `pthree yank` moves or copies files to a different location.
+- `pthree list` lists files in the specified directory.
 - `pthree film` to generate human readable metadata for [LensTagger](https://www.lenstagger.com/) tagged film pictures for Instagram.
     - The following EXIF tags are required to use the `film` command:
         - `Make`
